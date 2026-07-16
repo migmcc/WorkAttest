@@ -1,0 +1,141 @@
+{
+  "schema_version": 1,
+  "project": {
+    "name": "WorkAttest",
+    "slug": "workattest",
+    "idea": "WorkAttest: infraestrutura verificável que liga pedido, identidade, autorização, execução, evidência, verificação e aprovação humana a um receipt assinado para trabalho assistido por IA.",
+    "created_at": "2026-07-15T22:01:00Z",
+    "idea_source": null
+  },
+  "current_phase": "final-validation",
+  "decision": {
+    "decision": "APPROVED",
+    "reason": "Core thesis sound (accountability unit = accepted work), MVP technically feasible and well-scoped, and honestly bounded (processual/probatory, not correctness). Dominant risk is market, not build. Condition: run section 19 market-validation interviews in parallel with Phase 0/1 and treat willingness-to-pay as the primary kill criterion (section 21).",
+    "timestamp": "2026-07-15T22:04:22Z",
+    "source": "manual",
+    "current_stage": "validation"
+  },
+  "brief": {
+    "brief_path": "PROJECT_BRIEF.md",
+    "brief_imported_at": "2026-07-15T22:05:47Z",
+    "source_path": "C:\\Users\\Miguel\\AppData\\Local\\Temp\\claude\\d--Trabalho--Ongoing-WorkAttest\\43ddf2b8-66f3-4999-8b5b-6ffd3d921b62\\scratchpad\\PROJECT_BRIEF.md"
+  },
+  "setup_advice": {
+    "prepared_at": "2026-07-15T22:05:57Z",
+    "recommended_builders": [
+      "A-team (example execution toolkit) for serious or active project work",
+      "minimal builders only"
+    ],
+    "readiness_checks": [
+      "Install your execution toolkit (e.g. the A-team) in the project repo if this is a serious or active project",
+      "Install only minimal builders",
+      "Fill INIT.md",
+      "Run /orchestrate init",
+      "Review .agent-sync/TEAM.md",
+      "Review .agent-sync/ROUTING.md",
+      "Only then advance to technical execution",
+      "AgentDesk is optional support, not a replacement for A-team"
+    ],
+    "source": "deterministic"
+  },
+  "ateam_check": {
+    "checked_at": "2026-07-15T22:18:31Z",
+    "required_paths": [
+      "INIT.md",
+      ".agent-sync",
+      ".agent-sync/TEAM.md",
+      ".agent-sync/ROUTING.md"
+    ],
+    "present_paths": [
+      "INIT.md",
+      ".agent-sync",
+      ".agent-sync/TEAM.md",
+      ".agent-sync/ROUTING.md"
+    ],
+    "missing_paths": [],
+    "ready": true,
+    "source": "read-only-filesystem"
+  },
+  "execution_approval": {
+    "approved_at": "2026-07-15T22:59:58Z",
+    "reason": "Human approval received explicitly ('approved') for entering the execution phase. Validation was APPROVED (conditional); planning gate 100%; A-team ready.",
+    "source": "manual",
+    "override": false,
+    "ateam_ready_at_approval": true
+  },
+  "final_validation": {
+    "prepared_at": "2026-07-16T07:10:25Z",
+    "required_checks": [
+      "All unit tests green (python -m unittest discover -s tests -t .)",
+      "no-automation guard green (python -m unittest tests.test_no_automation)",
+      "README up to date",
+      "CHANGELOG updated if applicable",
+      "public-repo-audit run manually if the repo is public",
+      "skill quality gate run manually if skills are shipped",
+      "git status clean",
+      "release and tag only manually, outside ProjectPilot"
+    ],
+    "source": "deterministic"
+  },
+  "done_approval": null,
+  "history": [
+    {
+      "event": "init",
+      "phase": "idea",
+      "timestamp": "2026-07-15T22:01:00Z"
+    },
+    {
+      "event": "validate",
+      "phase": "validation",
+      "timestamp": "2026-07-15T22:02:09Z"
+    },
+    {
+      "event": "decision",
+      "decision": "APPROVED",
+      "phase": "validation",
+      "timestamp": "2026-07-15T22:04:22Z"
+    },
+    {
+      "event": "advance",
+      "phase": "brief",
+      "timestamp": "2026-07-15T22:04:27Z"
+    },
+    {
+      "event": "brief_imported",
+      "phase": "setup-advice",
+      "timestamp": "2026-07-15T22:05:47Z",
+      "brief_path": "PROJECT_BRIEF.md",
+      "source_path": "C:\\Users\\Miguel\\AppData\\Local\\Temp\\claude\\d--Trabalho--Ongoing-WorkAttest\\43ddf2b8-66f3-4999-8b5b-6ffd3d921b62\\scratchpad\\PROJECT_BRIEF.md"
+    },
+    {
+      "event": "setup_advice_prepared",
+      "phase": "planning",
+      "timestamp": "2026-07-15T22:05:57Z"
+    },
+    {
+      "event": "ateam_checked",
+      "phase": "planning",
+      "timestamp": "2026-07-15T22:16:26Z",
+      "ready": false
+    },
+    {
+      "event": "ateam_checked",
+      "phase": "planning",
+      "timestamp": "2026-07-15T22:18:31Z",
+      "ready": true
+    },
+    {
+      "event": "execution_approved",
+      "phase": "execution",
+      "timestamp": "2026-07-15T22:59:58Z",
+      "override": false,
+      "ateam_ready_at_approval": true
+    },
+    {
+      "event": "final_validation_prepared",
+      "phase": "final-validation",
+      "timestamp": "2026-07-16T07:10:25Z"
+    }
+  ],
+  "updated_at": "2026-07-16T07:10:25Z"
+}

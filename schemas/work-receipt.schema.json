@@ -1,0 +1,271 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://workattest.dev/schemas/work-receipt/v1",
+  "title": "WorkReceipt",
+  "description": "Verifiable Work Receipt v1 — the signed envelope that cryptographically links request, identity, authorization, execution, evidence, verification and human approval to the exact accepted artifact. Serialized canonically (RFC 8785 / JCS) before hashing and signing. See docs/ACCOUNTABILITY-MODEL.md and docs/INVARIANTS.md.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "receipt_id",
+    "request",
+    "subjects",
+    "authorization",
+    "execution",
+    "actions_root",
+    "artifacts",
+    "verification",
+    "policy",
+    "decision",
+    "issued_at",
+    "issuer",
+    "receipt_hash",
+    "signatures"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1.0.0",
+      "description": "Receipt schema version. Verifiers must reject unknown major versions."
+    },
+    "receipt_id": {
+      "type": "string",
+      "description": "Stable unique identifier for this receipt (e.g. UUIDv4 or ULID)."
+    },
+    "request": { "$ref": "#/$defs/WorkRequest" },
+    "subjects": {
+      "type": "array",
+      "description": "All verifiable subjects involved (human owner, agent, service accounts).",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/Subject" }
+    },
+    "authorization": { "$ref": "#/$defs/Authorization" },
+    "execution": { "$ref": "#/$defs/ExecutionSession" },
+    "actions_root": {
+      "type": "string",
+      "description": "Root hash of the append-only, hash-chained ActionEvent log for this execution (INV-11). Individual events may be stored/referenced in the evidence store."
+    },
+    "artifacts": {
+      "type": "array",
+      "description": "Artifacts produced or altered, identified by before/after hashes (INV-6).",
+      "items": { "$ref": "#/$defs/ArtifactEvidence" }
+    },
+    "verification": {
+      "type": "array",
+      "description": "Results of operator-defined checks. The agent never selects these checks (INV-5).",
+      "items": { "$ref": "#/$defs/VerificationResult" }
+    },
+    "approvals": {
+      "type": "array",
+      "description": "Human approval decisions. Required when risk is elevated (INV-16). Each binds to the result_hash of THIS execution (INV-9).",
+      "items": { "$ref": "#/$defs/ApprovalDecision" }
+    },
+    "policy": { "$ref": "#/$defs/PolicyRef" },
+    "decision": {
+      "type": "string",
+      "enum": ["ACCEPT", "HOLD", "REFUSE"],
+      "description": "Terminal policy decision for the accepted work. A REFUSE never becomes ACCEPT without re-evaluation (INV-18)."
+    },
+    "exceptions": {
+      "type": "array",
+      "description": "Explicit, justified exceptions included in the receipt (INV-17).",
+      "items": { "$ref": "#/$defs/Exception" }
+    },
+    "issued_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "RFC 3339 timestamp of issuance. MVP: local clock (weak time — see THREAT-MODEL residual risks)."
+    },
+    "issuer": {
+      "type": "string",
+      "description": "Identifier of the issuing authority/instance."
+    },
+    "previous_receipt_hash": {
+      "type": ["string", "null"],
+      "description": "Hash of the parent receipt for receipt chains; null if this is a root receipt."
+    },
+    "receipt_hash": {
+      "type": "string",
+      "description": "Hash over the canonical serialization of all receipt fields except 'signatures' and 'receipt_hash' itself. Any tamper is detectable (INV-14)."
+    },
+    "signatures": {
+      "type": "array",
+      "description": "One or more signatures over receipt_hash (INV-13). Multiple signatures supported.",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/Signature" }
+    },
+    "transparency_receipt": {
+      "type": ["object", "null"],
+      "description": "Optional inclusion proof from a transparency service (Rekor/SCITT/private). Absence must not break offline verification (INV-15).",
+      "additionalProperties": true
+    }
+  },
+  "$defs": {
+    "HashRef": {
+      "type": "object",
+      "required": ["alg", "value"],
+      "additionalProperties": false,
+      "properties": {
+        "alg": { "type": "string", "enum": ["sha256", "sha512"], "description": "Hash algorithm." },
+        "value": { "type": "string", "description": "Hex or base64 digest." }
+      }
+    },
+    "WorkRequest": {
+      "type": "object",
+      "required": ["id", "intent", "scope", "owner_subject", "risk_class", "created_at"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "intent": { "type": "string", "description": "What the work is meant to achieve." },
+        "scope": { "type": "string", "description": "Bounded scope of the work." },
+        "owner_subject": { "type": "string", "description": "Subject id of the human owner." },
+        "system": { "type": "string", "description": "Target system (e.g. repository)." },
+        "risk_class": { "type": "string", "enum": ["low", "medium", "high", "critical"] },
+        "constraints": { "type": "array", "items": { "type": "string" } },
+        "acceptance_criteria": { "type": "array", "items": { "type": "string" } },
+        "created_at": { "type": "string", "format": "date-time" }
+      }
+    },
+    "Subject": {
+      "type": "object",
+      "required": ["id", "type", "public_key"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" },
+        "type": { "type": "string", "enum": ["human", "agent", "service_account", "workload", "tool", "organization"] },
+        "issuer": { "type": "string", "description": "Identity issuer (e.g. git, github, oidc, local)." },
+        "claims": { "type": "object", "additionalProperties": true },
+        "public_key": { "type": "string", "description": "Ed25519 public key (identity never derives from a free-text name — INV-2, INV-10)." },
+        "status": { "type": "string", "enum": ["active", "revoked", "suspended"] }
+      }
+    },
+    "Authorization": {
+      "type": "object",
+      "required": ["id", "request_id", "subject_id", "policy_id", "allowed_actions", "allowed_resources", "issued_at", "signature"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" },
+        "request_id": { "type": "string" },
+        "subject_id": { "type": "string" },
+        "policy_id": { "type": "string" },
+        "allowed_actions": { "type": "array", "items": { "type": "string" } },
+        "allowed_resources": { "type": "array", "items": { "type": "string" } },
+        "conditions": { "type": "array", "items": { "type": "string" } },
+        "requires_approval": { "type": "boolean", "default": false },
+        "issued_at": { "type": "string", "format": "date-time" },
+        "expires_at": { "type": ["string", "null"], "format": "date-time" },
+        "revoked_at": { "type": ["string", "null"], "format": "date-time" },
+        "signature": { "$ref": "#/$defs/Signature" }
+      }
+    },
+    "ExecutionSession": {
+      "type": "object",
+      "required": ["id", "request_id", "authorization_id", "agent_subject_id", "human_owner_id", "started_at", "status"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" },
+        "request_id": { "type": "string" },
+        "authorization_id": { "type": "string" },
+        "agent_subject_id": { "type": "string" },
+        "human_owner_id": { "type": "string" },
+        "model": { "type": "string", "description": "Model identifier used by the agent, when applicable." },
+        "configuration_hash": { "type": "string" },
+        "workspace": { "type": "string" },
+        "started_at": { "type": "string", "format": "date-time" },
+        "ended_at": { "type": ["string", "null"], "format": "date-time" },
+        "status": { "type": "string", "enum": ["running", "completed", "aborted", "failed"] }
+      }
+    },
+    "ArtifactEvidence": {
+      "type": "object",
+      "required": ["id", "path_or_uri", "source"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" },
+        "path_or_uri": { "type": "string" },
+        "media_type": { "type": "string" },
+        "before_hash": { "anyOf": [ { "$ref": "#/$defs/HashRef" }, { "type": "null" } ] },
+        "after_hash": { "anyOf": [ { "$ref": "#/$defs/HashRef" }, { "type": "null" } ] },
+        "size": { "type": ["integer", "null"], "minimum": 0 },
+        "source": { "type": "string", "description": "Authorized source of the evidence (e.g. git, filesystem) — not the agent's self-report (INV-4)." },
+        "classification": { "type": "string", "enum": ["public", "internal", "confidential", "restricted"] },
+        "evidence_uri": { "type": ["string", "null"], "description": "Reference to stored evidence; sensitive content is not inlined by default (INV-19)." }
+      }
+    },
+    "VerificationResult": {
+      "type": "object",
+      "required": ["id", "check_id", "check_version", "definition_hash", "status"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" },
+        "check_id": { "type": "string" },
+        "name": { "type": "string" },
+        "check_version": { "type": "string" },
+        "definition_hash": { "$ref": "#/$defs/HashRef" },
+        "tool": { "type": "string" },
+        "tool_version": { "type": "string" },
+        "command": { "type": ["string", "null"] },
+        "mandatory": { "type": "boolean", "default": false, "description": "If true, absence/failure cannot yield ACCEPT (INV-8)." },
+        "started_at": { "type": ["string", "null"], "format": "date-time" },
+        "ended_at": { "type": ["string", "null"], "format": "date-time" },
+        "exit_code": { "type": ["integer", "null"] },
+        "status": { "type": "string", "enum": ["passed", "failed", "skipped", "error"] },
+        "output_hash": { "anyOf": [ { "$ref": "#/$defs/HashRef" }, { "type": "null" } ] },
+        "evidence_refs": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "ApprovalDecision": {
+      "type": "object",
+      "required": ["id", "execution_id", "approver_subject_id", "decision", "result_hash", "policy_id", "decided_at", "signature"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" },
+        "execution_id": { "type": "string", "description": "Must equal this receipt's execution.id — an approval only accepts the result of the same execution (INV-9)." },
+        "approver_subject_id": { "type": "string", "description": "Authenticated subject; identity derives from authentication (INV-10)." },
+        "role": { "type": "string" },
+        "decision": { "type": "string", "enum": ["approve", "reject"] },
+        "justification": { "type": "string" },
+        "result_hash": { "$ref": "#/$defs/HashRef" },
+        "policy_id": { "type": "string" },
+        "decided_at": { "type": "string", "format": "date-time" },
+        "signature": { "$ref": "#/$defs/Signature" }
+      }
+    },
+    "PolicyRef": {
+      "type": "object",
+      "required": ["policy_id", "version", "definition_hash"],
+      "additionalProperties": false,
+      "properties": {
+        "policy_id": { "type": "string" },
+        "version": { "type": "string" },
+        "definition_hash": { "$ref": "#/$defs/HashRef", "description": "Hash of the exact policy definition (versioned, deterministic, hashable — INV-7)." },
+        "uri": { "type": ["string", "null"] }
+      }
+    },
+    "Exception": {
+      "type": "object",
+      "required": ["id", "reason", "justification", "raised_by"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" },
+        "reason": { "type": "string" },
+        "justification": { "type": "string" },
+        "raised_by": { "type": "string" },
+        "approved_by": { "type": ["string", "null"] }
+      }
+    },
+    "Signature": {
+      "type": "object",
+      "required": ["alg", "key_id", "public_key", "value"],
+      "additionalProperties": false,
+      "properties": {
+        "alg": { "type": "string", "const": "ed25519" },
+        "key_id": { "type": "string" },
+        "public_key": { "type": "string", "description": "Ed25519 public key enabling offline verification (INV-15)." },
+        "value": { "type": "string", "description": "Signature bytes (base64)." },
+        "created_at": { "type": ["string", "null"], "format": "date-time" }
+      }
+    }
+  }
+}
