@@ -86,6 +86,11 @@ foreach ($target in @('.closure-smoke-receipt.json', '.closure-smoke-redacted.js
     Remove-Item -LiteralPath $resolved -Force
   }
 }
+if ((Test-Path -LiteralPath '.closure-smoke-receipt.json') -or
+    (Test-Path -LiteralPath '.closure-smoke-redacted.json')) {
+  throw 'Smoke files still exist after cleanup'
+}
+Write-Output 'SMOKE_CLEANUP_OK'
 ```
 
 Expected: both temporary files are absent and no project file is removed.
