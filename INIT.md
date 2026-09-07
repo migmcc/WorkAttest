@@ -8,7 +8,8 @@ to select the active team and routing. See `.agent-sync/TEAM.md` and `.agent-syn
 - **name:** WorkAttest
 - **slug:** workattest
 - **type:** greenfield / active-development
-- **stage:** planning (MVP — Fase 0/1 of the roadmap)
+- **stage:** MVP core built (Fases 0-3 of the roadmap); the ProjectPilot lifecycle for this
+  project closed at `done` on 2026-07-16
 - **one-liner:** Local-first, verifiable infrastructure that cryptographically links
   request → identity → authorization → execution → evidence → verification → human
   approval to a signed receipt for AI-assisted work.

@@ -38,13 +38,13 @@ Formalizar o modelo antes de escrever core.
 - [x] `PROJECT_BRIEF.md`
 - [x] `docs/PRD.md`
 - [x] `docs/ROADMAP.md`
-- [ ] `docs/ACCOUNTABILITY-MODEL.md`
-- [ ] `docs/THREAT-MODEL.md`
-- [ ] `docs/TRUST-BOUNDARIES.md`
-- [ ] `docs/INVARIANTS.md`
-- [ ] `docs/STANDARDS-DECISIONS.md`
-- [ ] `docs/COMPETITIVE-MATRIX.md`
-- [ ] `schemas/work-receipt.schema.json` (receipt v1)
+- [x] `docs/ACCOUNTABILITY-MODEL.md`
+- [x] `docs/THREAT-MODEL.md`
+- [x] `docs/TRUST-BOUNDARIES.md`
+- [x] `docs/INVARIANTS.md`
+- [x] `docs/STANDARDS-DECISIONS.md`
+- [x] `docs/COMPETITIVE-MATRIX.md`
+- [x] `schemas/work-receipt.schema.json` (receipt v1)
 
 **Gate:** modelo de confiança revisto · receipt v1 aprovado · primeiro caso de uso
 fechado · zero claims de "garantia absoluta" · ≥3 entrevistas de mercado iniciadas.

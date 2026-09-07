@@ -102,5 +102,13 @@ chains, and redaction. **Not yet:** richer identity (OIDC/SSO), transparency log
 
 ## Scope boundary
 
-No product code beyond the MVP core was written. Human gates (`pp final-validation`,
-`pp done`) remain unapproved and are left to the human owner.
+No product code beyond the MVP core was written. At the time this evidence was recorded, the
+human gates (`pp final-validation`, `pp done`) remained unapproved and were left to the human
+owner.
+
+> **Addendum (2026-09-07).** Those gates were closed later the same day and are recorded in
+> `.project-pilot/status.json`: `final_validation_prepared` at `2026-07-16T07:10:25Z` and
+> `done_approval` at `2026-07-16T08:55:50Z` — reason *"MVP core verified: 85 tests passing,
+> redaction CLI smoke green, artifact hashes current, and Git baseline clean"*, source `manual`.
+> The lifecycle phase is `done`. The paragraph above is kept as originally recorded rather than
+> rewritten: this is a provenance document, and amending it in place would defeat its purpose.
