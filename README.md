@@ -10,14 +10,14 @@ WorkAttest does not try to prove that an AI never errs. It proves that **no rele
 work is accepted without authority, evidence, validation and identifiable
 responsibility** — and ties that proof to the exact artifact.
 
-- Product vision & scope: [`ideia-workattest.md`](ideia-workattest.md), [`PROJECT_BRIEF.md`](PROJECT_BRIEF.md)
+- Product vision & scope: [`PROJECT_BRIEF.md`](PROJECT_BRIEF.md), [`docs/PRD.md`](docs/PRD.md)
 - Requirements & plan: [`docs/PRD.md`](docs/PRD.md), [`docs/ROADMAP.md`](docs/ROADMAP.md)
 - Trust model: [`docs/ACCOUNTABILITY-MODEL.md`](docs/ACCOUNTABILITY-MODEL.md), [`docs/TRUST-BOUNDARIES.md`](docs/TRUST-BOUNDARIES.md), [`docs/THREAT-MODEL.md`](docs/THREAT-MODEL.md), [`docs/INVARIANTS.md`](docs/INVARIANTS.md)
 - Receipt contract: [`schemas/work-receipt.schema.json`](schemas/work-receipt.schema.json)
 
 ## Status
 
-Early MVP core (Fase 1 + the crypto receipt heart of Fase 2). Implemented:
+Early MVP core (Phase 1 + the crypto receipt heart of Phase 2). Implemented:
 
 - Canonical JSON serialization (RFC 8785 subset) — deterministic hashing.
 - SHA-256 content hashing (`HashRef`).
