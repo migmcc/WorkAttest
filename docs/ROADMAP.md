@@ -2,39 +2,39 @@
 
 > **Proof before acceptance.**
 
-Roadmap macro por fases. O MVP corresponde às Fases 0–3. As fases 4+ são expansão
-de plataforma e só são justificadas após validação de mercado (ver critérios de
-paragem em `PROJECT_BRIEF.md` §10 e §21 da ideia).
+A macro roadmap by phase. The MVP is Phases 0–3. Phases 4 and beyond are platform
+expansion and are only justified after market validation (see the stop criteria in
+`PROJECT_BRIEF.md` §10).
 
-**Regra de ouro:** *contratos antes de integrações; core antes de UI; um único caso de
-uso antes de amplitude.*
+**The golden rule:** *contracts before integrations; core before UI; a single use case
+before breadth.*
 
 ---
 
-## Linha temporal (macro)
+## Timeline (macro)
 
 ```
-Fase 0 ── Fase 1 ── Fase 2 ── Fase 3 ──┐  (MVP)
-Discovery  Core     Crypto    SW change │
-contratos  determ.  receipts  adapter   │
-                                        ▼
-                          [ Gate MVP + validação de mercado ]
-                                        │
-Fase 4 ── Fase 5 ── Fase 6 ── Fase 7    ▼  (expansão, só se willingness-to-pay provada)
+Phase 0 ─ Phase 1 ─ Phase 2 ─ Phase 3 ─┐  (MVP)
+Discovery  Determ.   Crypto    SW change │
+contracts  core      receipts  adapter   │
+                                         ▼
+                          [ MVP gate + market validation ]
+                                         │
+Phase 4 ─ Phase 5 ─ Phase 6 ─ Phase 7    ▼  (expansion, only if willingness-to-pay is proven)
 PPilot     Taevdar   GitHub    Enterprise
 integr.    ctrl plane  App      control plane
 ```
 
-**Track paralelo obrigatório (condição de aprovação):** entrevistas de mercado (§19),
-a correr desde a Fase 0. *Willingness-to-pay* é o critério de paragem primário.
+**Mandatory parallel track (approval condition):** market interviews, running from Phase 0
+onwards. Willingness-to-pay is the primary stop criterion. See `TASKS.md` TASK-004.
 
 ---
 
-## Fase 0 — Discovery & contratos  *(MVP)*
+## Phase 0 — Discovery and contracts  *(MVP)*
 
-Formalizar o modelo antes de escrever core.
+Formalize the model before writing core code.
 
-**Entregáveis**
+**Deliverables**
 - [x] `PROJECT_BRIEF.md`
 - [x] `docs/PRD.md`
 - [x] `docs/ROADMAP.md`
@@ -46,73 +46,73 @@ Formalizar o modelo antes de escrever core.
 - [x] `docs/COMPETITIVE-MATRIX.md`
 - [x] `schemas/work-receipt.schema.json` (receipt v1)
 
-**Gate:** modelo de confiança revisto · receipt v1 aprovado · primeiro caso de uso
-fechado · zero claims de "garantia absoluta" · ≥3 entrevistas de mercado iniciadas.
+**Gate:** trust model reviewed · receipt v1 approved · first use case closed · zero
+"absolute guarantee" claims · at least 3 market interviews started.
 
-## Fase 1 — Core determinístico  *(MVP)*
+## Phase 1 — Deterministic core  *(MVP)*
 
-**Entregáveis:** entidades e estados do domínio · canonical JSON · policy decisions
-(`ACCEPT/HOLD/REFUSE`) determinísticas · storage interfaces · append-only events com
-hash chain · unit tests · property-based tests · CLI mínima (esqueleto).
+**Deliverables:** domain entities and states · canonical JSON · deterministic policy
+decisions (`ACCEPT/HOLD/REFUSE`) · storage interfaces · append-only events with a hash
+chain · unit tests · property-based tests · minimal CLI skeleton.
 
-**Gate:** domínio independente de infraestrutura · policy determinística testada ·
-serialização canónica reprodutível · cobertura de invariantes de domínio.
+**Gate:** domain independent of infrastructure · deterministic policy under test ·
+reproducible canonical serialization · domain invariants covered.
 
-## Fase 2 — Cryptographic receipts  *(MVP)*
+## Phase 2 — Cryptographic receipts  *(MVP)*
 
-**Entregáveis:** geração e gestão de chaves Ed25519 · signing e verification · modelo
-de key rotation · receipt chains (`previous_receipt_hash`) · redaction · **offline
-verifier** · testes adversariais de tamper.
+**Deliverables:** Ed25519 key generation and management · signing and verification · a key
+rotation model · receipt chains (`previous_receipt_hash`) · redaction · an **offline
+verifier** · adversarial tamper tests.
 
-**Gate:** receipt assinado e verificável offline · tamper de receipt/evidência
-detetado · múltiplas assinaturas suportadas · schema versionado.
+**Gate:** receipt signed and verifiable offline · tampering with receipt or evidence
+detected · multiple signatures supported · schema versioned.
 
-## Fase 3 — Software change adapter  *(MVP — fecha o MVP)*
+## Phase 3 — Software change adapter  *(MVP — closes the MVP)*
 
-**Entregáveis:** Git snapshots (inicial/final) · diffs · artifact hashes · observação
-de comandos · Verifier com checks do operador · approval humano · **demo completa**
-Claude/Codex → Git → receipt.
+**Deliverables:** Git snapshots (initial/final) · diffs · artifact hashes · command
+observation · a Verifier running operator-defined checks · human approval · a **complete
+demo** from Claude/Codex through Git to a receipt.
 
-**Gate = Definition of Done do MVP** (ver `docs/PRD.md` §7). Executar a demo do §6 do PRD
-e validar o receipt noutra máquina.
-
----
-
-### ▲ Ponto de decisão pós-MVP (`PROJECT_BRIEF.md` §10 / ideia §21)
-Continuar / reorientar / parar, com base em: receipt validável offline · integração
-Git funcional · ≥2 agentes suportados · policy blocks demonstráveis · ≥3 design
-partners · ≥1 piloto pago ou LOI · auditores consideram a evidência útil.
+**Gate = the MVP Definition of Done** (see `docs/PRD.md` §7). Run the demo in PRD §6 and
+validate the receipt on another machine.
 
 ---
 
-## Fase 4 — ProjectPilot integration  *(expansão)*
+### ▲ Post-MVP decision point (`PROJECT_BRIEF.md` §10)
+Continue, redirect or stop, based on: receipt validatable offline · working Git
+integration · at least 2 agents supported · demonstrable policy blocks · at least 3 design
+partners · at least 1 paid pilot or LOI · auditors finding the evidence useful.
 
-ProjectPilot torna-se o primeiro cliente de lifecycle. Transições relevantes
-(validation→brief, planning→execution, execution→final-validation, →done) podem exigir
-um WorkAttest receipt válido.
+---
 
-## Fase 5 — Taevdar integration  *(expansão)*
+## Phase 4 — ProjectPilot integration  *(expansion)*
 
-Taevdar torna-se control plane e experiência operacional (pending decisions,
-executions, proofs, incidents, integrity, approvals, receipts). A proof interna do
-Taevdar é progressivamente substituída por receipts WorkAttest.
+ProjectPilot becomes the first lifecycle customer. Relevant transitions
+(validation→brief, planning→execution, execution→final-validation, →done) may require a
+valid WorkAttest receipt.
 
-## Fase 6 — GitHub App  *(expansão)*
+## Phase 5 — Taevdar integration  *(expansion)*
 
-Required status checks · PR receipts · organization policies · release receipts ·
-identidade via GitHub/OIDC · evidence links · branch protection.
+Taevdar becomes the control plane and operational experience (pending decisions,
+executions, proofs, incidents, integrity, approvals, receipts). Taevdar's internal proof is
+progressively replaced by WorkAttest receipts.
 
-## Fase 7 — Enterprise control plane  *(expansão)*
+## Phase 6 — GitHub App  *(expansion)*
 
-SSO · RBAC · separation of duties · policy management · evidence retention · private
+Required status checks · PR receipts · organization policies · release receipts · identity
+via GitHub/OIDC · evidence links · branch protection.
+
+## Phase 7 — Enterprise control plane  *(expansion)*
+
+SSO · RBAC · separation of duties · policy management · evidence retention · a private
 transparency service · SIEM · Jira/ServiceNow · on-premises · audit reports.
 
 ---
 
-## Componentes open-source vs. comercial
+## Open-source versus commercial components
 
-| Open source (confiança) | Comercial (monetização) |
+| Open source (trust) | Commercial (monetization) |
 |---|---|
 | receipt schema · verifier · canonicalization · signing interfaces · core domain · policy SDK · Git adapter · conformance suite | control plane · SSO/RBAC · policy management · evidence retention · integrations · private transparency log · reporting · multi-org · on-premises · compliance packs · incident forensics |
 
-> Um produto de confiança não deve exigir confiança cega num formato fechado.
+> A trust product should not demand blind trust in a closed format.

@@ -2,48 +2,47 @@
 
 > **Proof before acceptance.**
 
-Invariantes do sistema: propriedades que têm de ser **sempre verdadeiras**. Cada uma é
-testável e mapeia para ameaças (`docs/THREAT-MODEL.md`) e para factos de accountability
-(`docs/ACCOUNTABILITY-MODEL.md`). Violá-las invalida o receipt.
+System invariants: properties that must **always** hold. Each one is testable and maps to
+threats (`docs/THREAT-MODEL.md`) and to accountability facts
+(`docs/ACCOUNTABILITY-MODEL.md`). Violating any of them invalidates the receipt.
 
-Convenção de estados terminais da policy: `ACCEPT` / `HOLD` / `REFUSE`.
+Terminal policy states, by convention: `ACCEPT` / `HOLD` / `REFUSE`.
 
 ---
 
-| ID | Invariante | Categoria | Como é testado |
+| ID | Invariant | Category | How it is tested |
 |---|---|---|---|
-| **INV-1** | Nenhuma execução existe sem `WorkRequest`. | Autoridade | Rejeitar `execution start` sem `request_id` válido |
-| **INV-2** | Nenhuma execução começa sem subject e autorização válidos. | Identidade | Rejeitar start com subject/auth em falta ou inválidos |
-| **INV-3** | Nenhuma ação de impacto é aceite fora do âmbito autorizado. | Autorização | Ação fora de `allowed_actions/resources` → HOLD/REFUSE |
-| **INV-4** | Informação declarada pelo agente nunca é evidência verificada. | Integridade | Evidência só de fonte autorizada; declaração ≠ facto |
-| **INV-5** | O agente nunca escolhe os checks que o verificam. | Segregação | Checks vêm da config do operador, não do request do agente |
-| **INV-6** | Todo artefacto relevante possui hash antes e/ou depois. | Integridade | `ArtifactEvidence` exige `before_hash`/`after_hash` |
-| **INV-7** | Todo `VerificationResult` identifica a definição exata do check. | Verificação | `definition_hash` presente e ligado ao check |
-| **INV-8** | Ausência de checks obrigatórios nunca equivale a aprovação. | Fail-safe | Falta de check obrigatório → HOLD, nunca ACCEPT |
-| **INV-9** | Um approval só pode aceitar o resultado da mesma execução. | Segregação | `approval.result_hash` == resultado da própria execução |
-| **INV-10** | A identidade do approver deriva da autenticação. | Identidade | Approver = subject autenticado, nunca nome livre |
-| **INV-11** | Ações e decisões são append-only. | Integridade | Sem update/delete; só append com hash chain |
-| **INV-12** | Todo receipt é serializado de forma canónica. | Determinismo | Round-trip de canonicalização estável e reprodutível |
-| **INV-13** | Todo receipt final é assinado. | Cripto | `signatures` não vazio; sign obrigatório na emissão |
-| **INV-14** | Alterações ao receipt ou aos elementos abrangidos são detetáveis. | Integridade | Tamper de qualquer byte → verificação falha |
-| **INV-15** | Todo receipt pode ser verificado externamente. | Independência | Verificação offline só com chave pública + schema |
-| **INV-16** | Ações de risco elevado exigem approval humano. | Autoridade | `risk_class` elevado sem approval → HOLD |
-| **INV-17** | Exceções são explícitas, justificadas e incluídas no receipt. | Transparência | Exceção sem justificação registada → inválida |
-| **INV-18** | Um `REFUSE` nunca vira `ACCEPT` sem nova avaliação. | Estado | Transição REFUSE→ACCEPT exige reavaliação registada |
-| **INV-19** | Conteúdo sensível nunca é incluído automaticamente na evidência. | Privacidade | Default = hash+ref/classificação; inclusão é explícita |
-| **INV-20** | Falhas de identidade, policy, assinatura ou verificação fecham em segurança. | Fail-safe | Qualquer falha nestes eixos → HOLD/REFUSE, nunca ACCEPT |
+| **INV-1** | No execution exists without a `WorkRequest`. | Authority | Reject `execution start` without a valid `request_id` |
+| **INV-2** | No execution begins without a valid subject and authorization. | Identity | Reject start when subject/auth is missing or invalid |
+| **INV-3** | No impactful action is accepted outside the authorized scope. | Authorization | Action outside `allowed_actions/resources` → HOLD/REFUSE |
+| **INV-4** | Information declared by the agent is never verified evidence. | Integrity | Evidence only from an authorized source; a claim is not a fact |
+| **INV-5** | The agent never chooses the checks that verify it. | Segregation | Checks come from operator config, not from the agent's request |
+| **INV-6** | Every relevant artifact carries a hash before and/or after. | Integrity | `ArtifactEvidence` requires `before_hash`/`after_hash` |
+| **INV-7** | Every `VerificationResult` identifies the exact check definition. | Verification | `definition_hash` present and bound to the check |
+| **INV-8** | Absent mandatory checks never amount to approval. | Fail-safe | Missing mandatory check → HOLD, never ACCEPT |
+| **INV-9** | An approval can only accept the result of the same execution. | Segregation | `approval.result_hash` == that execution's own result |
+| **INV-10** | The approver's identity derives from authentication. | Identity | Approver is an authenticated subject, never a free-text name |
+| **INV-11** | Actions and decisions are append-only. | Integrity | No update/delete; append only, with a hash chain |
+| **INV-12** | Every receipt is serialized canonically. | Determinism | Canonicalization round-trip is stable and reproducible |
+| **INV-13** | Every final receipt is signed. | Crypto | `signatures` non-empty; signing is mandatory at issuance |
+| **INV-14** | Changes to the receipt or to what it covers are detectable. | Integrity | Tampering with any byte → verification fails |
+| **INV-15** | Every receipt can be verified externally. | Independence | Offline verification with the public key and schema alone |
+| **INV-16** | High-risk actions require human approval. | Authority | High `risk_class` without approval → HOLD |
+| **INV-17** | Exceptions are explicit, justified and carried in the receipt. | Transparency | An exception without a recorded justification is invalid |
+| **INV-18** | A `REFUSE` never becomes an `ACCEPT` without re-evaluation. | State | A REFUSE→ACCEPT transition requires a recorded re-evaluation |
+| **INV-19** | Sensitive content is never included in evidence automatically. | Privacy | Default is hash+ref/classification; inclusion is explicit |
+| **INV-20** | Identity, policy, signature or verification failures close safely. | Fail-safe | Any failure on these axes → HOLD/REFUSE, never ACCEPT |
 
 ---
 
-## Estratégia de teste
+## Test strategy
 
-- **Unit tests** — cada invariante tem pelo menos um teste positivo e um negativo.
-- **Property-based tests** — determinismo (INV-12) e hash chain (INV-11) validados com
-  inputs gerados.
-- **Testes adversariais** — INV-4/5/8/9/14/18/20 mapeiam diretamente para T-1…T-12 em
+- **Unit tests** — every invariant has at least one positive and one negative test.
+- **Property-based tests** — determinism (INV-12) and the hash chain (INV-11) validated
+  against generated inputs.
+- **Adversarial tests** — INV-4/5/8/9/14/18/20 map directly onto T-1…T-12 in
   `docs/THREAT-MODEL.md`.
-- **Conformance suite** — verifica que qualquer implementação do verifier respeita
-  INV-12…INV-15.
+- **Conformance suite** — checks that any verifier implementation upholds INV-12…INV-15.
 
-> Regra de ouro: se um invariante não tem um teste que falha quando ele é violado, o
-> invariante ainda não existe.
+> The golden rule: if an invariant has no test that fails when it is violated, the
+> invariant does not exist yet.

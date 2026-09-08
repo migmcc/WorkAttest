@@ -2,103 +2,105 @@
 
 > **Proof before acceptance.**
 
-Define **o que significa "trabalho aceite"** em WorkAttest, que factos são provados,
-com que força, e onde termina a responsabilidade do sistema. É o contrato conceptual
-que o receipt materializa.
+Defines **what "accepted work" means** in WorkAttest: which facts are proven, with what
+force, and where the system's responsibility ends. It is the conceptual contract that the
+receipt makes concrete.
 
 ---
 
-## 1. A unidade de accountability
+## 1. The unit of accountability
 
-A unidade **não** é o prompt, a conversa, a chamada ao modelo, a tool call isolada, o
-log nem o agente. É o **trabalho aceite**:
+The unit is **not** the prompt, the conversation, the model call, the isolated tool call,
+the log, or the agent. It is **accepted work**:
 
 ```
-Pedido autorizado
-+ identidade do humano e do agente
-+ permissões utilizadas
-+ ações executadas
-+ artefactos produzidos ou alterados
-+ verificações independentes
-+ exceções e riscos
-+ aprovação autenticada
-+ receipt assinado
+Authorized request
++ identity of the human and of the agent
++ permissions used
++ actions executed
++ artifacts produced or changed
++ independent verifications
++ exceptions and risks
++ authenticated approval
++ signed receipt
 = Verifiable Work Receipt
 ```
 
-## 2. A cadeia de custódia (9 elos)
+## 2. The chain of custody (9 links)
 
-Cada elo tem de estar **ligado criptograficamente** ao seguinte para o trabalho contar
-como aceite:
+Each link must be **cryptographically bound** to the next for the work to count as
+accepted:
 
-| # | Elo | Facto provado | Ligação criptográfica |
+| # | Link | Fact proven | Cryptographic binding |
 |---|---|---|---|
-| 1 | Pedido | O trabalho começou com um `WorkRequest` identificável | `request_id`, hash do request |
-| 2 | Identidade | Humano e agente são subjects verificáveis | chave pública / claims assinados |
-| 3 | Autorização | Existia autoridade válida com âmbito e validade | `authorization.signature` |
-| 4 | Ações | As ações relevantes foram registadas por fonte autorizada | hash chain de `ActionEvent` (`actions_root`) |
-| 5 | Artefactos | Os artefactos estão identificados | `before_hash` / `after_hash` |
-| 6 | Verificação | Os checks declarados correram de facto | `VerificationResult` + `definition_hash` + `output_hash` |
-| 7 | Policy | A policy aplicada está identificada e versionada | `policy_id` + hash da policy |
-| 8 | Aprovação | O responsável aceitou *exatamente* aquele resultado | `approval.result_hash` == resultado + assinatura |
-| 9 | Receipt | O envelope final é íntegro e verificável offline | `receipt_hash` + `signatures` |
+| 1 | Request | The work began with an identifiable `WorkRequest` | `request_id`, hash of the request |
+| 2 | Identity | Human and agent are verifiable subjects | public key / signed claims |
+| 3 | Authorization | Valid authority existed, with scope and validity | `authorization.signature` |
+| 4 | Actions | Relevant actions were recorded by an authorized source | `ActionEvent` hash chain (`actions_root`) |
+| 5 | Artifacts | The artifacts are identified | `before_hash` / `after_hash` |
+| 6 | Verification | The declared checks actually ran | `VerificationResult` + `definition_hash` + `output_hash` |
+| 7 | Policy | The applied policy is identified and versioned | `policy_id` + policy hash |
+| 8 | Approval | The responsible person accepted *exactly* that result | `approval.result_hash` == result, plus signature |
+| 9 | Receipt | The final envelope is intact and verifiable offline | `receipt_hash` + `signatures` |
 
-Quebrar qualquer elo → o trabalho **não** é aceite (fecha em `HOLD`/`REFUSE`).
+Break any link and the work is **not** accepted (it closes to `HOLD`/`REFUSE`).
 
-## 3. Força probatória (o que o receipt prova / não prova)
+## 3. Evidential force (what the receipt does and does not prove)
 
-| Prova (dentro do modelo de confiança) | **Não** prova |
+| Proves (within the trust model) | Does **not** prove |
 |---|---|
-| O trabalho começou com pedido identificável | Que o código não tem bugs |
-| O subject possuía autorização válida, com âmbito e validade | Que uma análise está correta |
-| As ações foram registadas por fonte autorizada | Que um documento é juridicamente perfeito |
-| Os artefactos estão identificados por hash | Que o modelo nunca alucina |
-| As verificações declaradas correram | Que os checks configurados são suficientes |
-| O agente não escolheu os checks | Que a aprovação humana foi competente |
-| A policy está identificada e versionada | Que a policy organizacional é adequada |
-| A aprovação liga-se ao resultado exato | |
-| A identidade do approver deriva de autenticação | |
-| Alterações posteriores são detetáveis | |
-| O receipt é validável sem confiar na app que o produziu | |
+| The work began with an identifiable request | That the code is free of bugs |
+| The subject held a valid authorization, with scope and validity | That an analysis is correct |
+| Actions were recorded by an authorized source | That a document is legally sound |
+| Artifacts are identified by hash | That the model never hallucinates |
+| The declared verifications ran | That the configured checks are sufficient |
+| The agent did not choose the checks | That the human approval was competent |
+| The policy is identified and versioned | That the organizational policy is adequate |
+| The approval binds to the exact result | |
+| The approver's identity derives from authentication | |
+| Later changes are detectable | |
+| The receipt is checkable without trusting the app that produced it | |
 
-**Promessa correta (processual e probatória):**
-> WorkAttest prova que o processo definido foi seguido e liga esse processo ao resultado aceite.
+**The correct promise (procedural and evidential):**
+> WorkAttest proves that the defined process was followed, and binds that process to the
+> accepted result.
 
-## 4. Decisões de accountability
+## 4. Accountability decisions
 
-A policy emite exatamente um de três estados terminais por avaliação:
+Per evaluation, the policy emits exactly one of three terminal states:
 
-- **ACCEPT** — autorização válida, artefactos identificados, todos os gates obrigatórios
-  passaram, e (se exigido) o resultado foi aprovado.
-- **HOLD** — falta evidência, aprovação, segregação de funções, ou um check obrigatório
-  não foi executado. Estado recuperável mediante nova evidência/aprovação.
-- **REFUSE** — ação proibida, identidade inválida, autorização expirada, policy violada,
-  ou evidência incompatível com o artefacto. Um `REFUSE` **nunca** vira `ACCEPT` sem
-  nova avaliação.
+- **ACCEPT** — valid authorization, identified artifacts, all mandatory gates passed, and
+  (where required) the result was approved.
+- **HOLD** — missing evidence, missing approval, a segregation-of-duties problem, or a
+  mandatory check that did not run. Recoverable with new evidence or approval.
+- **REFUSE** — forbidden action, invalid identity, expired authorization, policy violation,
+  or evidence inconsistent with the artifact. A `REFUSE` **never** becomes an `ACCEPT`
+  without a new evaluation.
 
-## 5. Segregação de funções
+## 5. Segregation of duties
 
-- O **agente** executa; **não** escolhe nem altera os checks que o verificam (elo 6).
-- O **operador/organização** define os checks obrigatórios e a policy.
-- O **approver humano** aceita o resultado; a sua identidade **deriva da autenticação**,
-  não de um nome declarado. Uma pessoa **nunca** aprova a proof de outra execução.
-- O **verifier independente** valida o receipt sem confiar na aplicação emissora.
+- The **agent** executes; it does **not** choose or alter the checks that verify it (link 6).
+- The **operator/organization** defines the mandatory checks and the policy.
+- The **human approver** accepts the result; their identity **derives from authentication**,
+  not from a declared name. A person **never** approves the proof of another execution.
+- The **independent verifier** validates the receipt without trusting the issuing
+  application.
 
-## 6. Papéis (RACI simplificado do trabalho aceite)
+## 6. Roles (a simplified RACI for accepted work)
 
-| Papel | Responsabilidade no receipt |
+| Role | Responsibility in the receipt |
 |---|---|
-| Owner (humano) | Cria o request; é o dono do trabalho |
-| Agent (IA) | Executa dentro do âmbito autorizado |
-| Policy | Classifica risco, exige evidência/aprovação, decide |
-| Verifier | Corre e atesta os checks (independente do agente) |
-| Approver | Aceita o resultado exato, com identidade autenticada |
-| Issuer | Emite e assina o receipt canónico |
-| Independent Verifier | Confirma tudo offline |
+| Owner (human) | Creates the request; owns the work |
+| Agent (AI) | Executes within the authorized scope |
+| Policy | Classifies risk, demands evidence/approval, decides |
+| Verifier | Runs and attests the checks (independently of the agent) |
+| Approver | Accepts the exact result, with an authenticated identity |
+| Issuer | Issues and signs the canonical receipt |
+| Independent Verifier | Confirms everything offline |
 
-## 7. Ligações
+## 7. Links
 
-- Invariantes que garantem estes factos: `docs/INVARIANTS.md`.
-- Onde a confiança começa e acaba: `docs/TRUST-BOUNDARIES.md`.
-- Ameaças a cada elo: `docs/THREAT-MODEL.md`.
-- Estrutura do envelope: `schemas/work-receipt.schema.json`.
+- The invariants that guarantee these facts: `docs/INVARIANTS.md`.
+- Where trust begins and ends: `docs/TRUST-BOUNDARIES.md`.
+- Threats against each link: `docs/THREAT-MODEL.md`.
+- Envelope structure: `schemas/work-receipt.schema.json`.

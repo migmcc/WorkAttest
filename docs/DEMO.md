@@ -57,6 +57,6 @@ These are encoded as automated tests in [`tests/adversarial/test_tamper.py`](../
 
 ## What this demonstrates
 
-The six MVP success criteria from `docs/PRD.md` §7, minus the Git adapter (Fase 3): a
+The six MVP success criteria from `docs/PRD.md` §7, minus the Git adapter (Phase 3): a
 third party, given only the receipt and the public key, can confirm the work was
 authorized, verified, approved for that exact result, and unaltered.

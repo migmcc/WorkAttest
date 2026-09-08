@@ -4,124 +4,130 @@
 
 | | |
 |---|---|
-| **Documento** | Product Requirements Document |
-| **Âmbito** | MVP — primeiro wedge (alterações de software assistidas por IA) |
-| **Estado** | Planning |
-| **Fonte** | `ideia-workattest.md`, `PROJECT_BRIEF.md` |
-| **Fora de âmbito** | Ver §9 e `PROJECT_BRIEF.md` §7 |
+| **Document** | Product Requirements Document |
+| **Scope** | MVP — the first wedge (AI-assisted software changes) |
+| **Status** | MVP core built (see `TASKS.md` for what remains open) |
+| **Source** | `PROJECT_BRIEF.md` |
+| **Out of scope** | See §9 and `PROJECT_BRIEF.md` §7 |
 
 ---
 
-## 1. Objetivo do produto (MVP)
+## 1. Product goal (MVP)
 
-Demonstrar, ponta-a-ponta, que uma alteração de software assistida por IA pode ser
-**autorizada, observada, verificada, aprovada e transformada num receipt assinado que
-qualquer terceiro valida offline** — sem confiar na aplicação que o produziu.
+Demonstrate, end to end, that an AI-assisted software change can be **authorized,
+observed, verified, approved and turned into a signed receipt that any third party can
+validate offline** — without trusting the application that produced it.
 
-O MVP prova o **modelo de accountability**, não a amplitude da plataforma.
+The MVP proves the **accountability model**, not the breadth of a platform.
 
-## 2. Utilizadores e jobs-to-be-done
+## 2. Users and jobs to be done
 
-| Utilizador | Job | Necessidade que o MVP satisfaz |
+| User | Job | Need the MVP meets |
 |---|---|---|
-| Programador / operador de agente | Executar uma alteração assistida por IA | Obter autorização com âmbito e produzir evidência sem fricção manual |
-| Engineering manager / approver | Aceitar um resultado | Aprovar *exatamente* o artefacto verificado, com identidade autenticada |
-| Security / quality engineer | Definir e garantir checks | Garantir que os checks obrigatórios correm e que o agente não os escolhe |
-| Auditor / compliance | Reconstruir e confiar | Verificar offline que o processo foi seguido e ligado ao artefacto |
-| Terceiro externo | Confiar sem acesso ao servidor | Validar receipt com chave pública, sem o WorkAttest |
+| Developer / agent operator | Run an AI-assisted change | Get scoped authorization and produce evidence without manual friction |
+| Engineering manager / approver | Accept a result | Approve *exactly* the verified artifact, with an authenticated identity |
+| Security / quality engineer | Define and enforce checks | Ensure mandatory checks run and that the agent does not choose them |
+| Auditor / compliance | Reconstruct and trust | Verify offline that the process was followed and bound to the artifact |
+| External third party | Trust without server access | Validate a receipt with a public key, without WorkAttest |
 
-## 3. Requisitos funcionais
+## 3. Functional requirements
 
-### 3.1 WorkRequest & Autorização
-- **FR-1** O sistema regista um `WorkRequest` (intent, scope, owner, sistema, risk_class, acceptance_criteria).
-- **FR-2** A policy avalia o request e emite `ACCEPT` / `HOLD` / `REFUSE` de forma **determinística**.
-- **FR-3** Uma autorização válida define subject, ações permitidas, recursos, condições, validade e se exige approval. Nenhuma ação de impacto é aceite fora do âmbito autorizado.
+### 3.1 WorkRequest and authorization
+- **FR-1** The system records a `WorkRequest` (intent, scope, owner, system, risk_class, acceptance_criteria).
+- **FR-2** The policy evaluates the request and emits `ACCEPT` / `HOLD` / `REFUSE` **deterministically**.
+- **FR-3** A valid authorization defines the subject, allowed actions, resources, conditions, validity and whether approval is required. No impactful action is accepted outside the authorized scope.
 
-### 3.2 Identidade
-- **FR-4** Cada subject (humano, agente, service account) é verificável por chave (MVP: Ed25519 local, identidade Git/GitHub, OIDC em CI). Identidade **nunca** é apenas um nome no request body.
+### 3.2 Identity
+- **FR-4** Every subject (human, agent, service account) is verifiable by key (MVP: local Ed25519, Git/GitHub identity, OIDC in CI). Identity is **never** merely a name in the request body.
 
-### 3.3 Execução & Observação
-- **FR-5** Uma `ExecutionSession` liga request, autorização, agente, humano, modelo e workspace.
-- **FR-6** O Git adapter captura estado inicial e final (commits, diffs, hashes de ficheiros).
-- **FR-7** `ActionEvent`s relevantes são registados append-only com hash encadeado (`previous_event_hash`). Informação declarada pelo agente **nunca** é tratada como evidência verificada.
+### 3.3 Execution and observation
+- **FR-5** An `ExecutionSession` binds request, authorization, agent, human, model and workspace.
+- **FR-6** The Git adapter captures the initial and final state (commits, diffs, file hashes).
+- **FR-7** Relevant `ActionEvent`s are recorded append-only with a chained hash (`previous_event_hash`). Information declared by the agent is **never** treated as verified evidence.
 
-### 3.4 Evidência & Verificação
-- **FR-8** `ArtifactEvidence` regista before/after hash, media type, size, source, classification para cada artefacto relevante.
-- **FR-9** O Verifier executa checks definidos pelo **operador** (testes, lint, typecheck, security, custom). Cada `VerificationResult` regista check_id, versão, definition_hash, exit_code, output_hash, timing e evidence_refs.
-- **FR-10** O agente **não** escolhe nem altera os checks que o verificam. Ausência de checks obrigatórios **nunca** equivale a aprovação.
+### 3.4 Evidence and verification
+- **FR-8** `ArtifactEvidence` records before/after hash, media type, size, source and classification for every relevant artifact.
+- **FR-9** The Verifier runs **operator-defined** checks (tests, lint, typecheck, security, custom). Each `VerificationResult` records check_id, version, definition_hash, exit_code, output_hash, timing and evidence_refs.
+- **FR-10** The agent does **not** choose or alter the checks that verify it. Absent mandatory checks **never** amount to approval.
 
-### 3.5 Aprovação
-- **FR-11** Ações de risco elevado exigem `ApprovalDecision` de humano autenticado, ligada ao `result_hash` da **mesma** execução, com justificação e assinatura. Append-only.
+### 3.5 Approval
+- **FR-11** High-risk actions require an `ApprovalDecision` from an authenticated human, bound to the `result_hash` of the **same** execution, with justification and signature. Append-only.
 
-### 3.6 Receipt & Verificação independente
-- **FR-12** O Receipt Issuer produz um `WorkReceipt` com serialização **canónica**, schema versionado e assinatura Ed25519, incluindo/ referenciando policy, actions_root, artifacts, verification, approvals.
-- **FR-13** `workattest receipt verify <file>` valida schema, assinatura, signatário, hashes, artefactos, policy, relação com a execução e approvals — **offline**, sem acesso ao servidor principal.
-- **FR-14** Qualquer alteração posterior ao receipt ou à evidência abrangida é **detetável**.
+### 3.6 Receipt and independent verification
+- **FR-12** The Receipt Issuer produces a `WorkReceipt` with **canonical** serialization, a versioned schema and an Ed25519 signature, including or referencing policy, actions_root, artifacts, verification and approvals.
+- **FR-13** `workattest receipt verify <file>` validates schema, signature, signer, hashes, artifacts, policy, the relationship to the execution, and approvals — **offline**, with no access to the main server.
+- **FR-14** Any later change to the receipt or to the evidence it covers is **detectable**.
 
-### 3.7 CLI mínima
+### 3.7 Minimal CLI
 - **FR-15** `workattest init | request create | policy evaluate | execution start/observe | evidence add | verify run | approve | receipt issue | receipt verify`.
 
-## 4. Requisitos não-funcionais
+## 4. Non-functional requirements
 
-- **NFR-1 Determinismo** — policy e serialização canónica produzem o mesmo output para o mesmo input; receipts são hashable e reproduzíveis.
-- **NFR-2 Independência de infraestrutura** — o core do domínio não depende de FastAPI, GitHub, Claude, Codex ou DB específica.
-- **NFR-3 Fail-safe** — falhas de identidade, policy, assinatura ou verificação fecham em segurança (nunca em `ACCEPT`).
-- **NFR-4 Append-only** — ações, decisões e approvals não são mutáveis.
-- **NFR-5 Minimização de dados** — conteúdo sensível nunca é incluído automaticamente na evidência; suporte a hash+referência, classificação e redaction.
-- **NFR-6 Standards-first** — preferir in-toto/DSSE/Sigstore/SCITT/SLSA a cripto proprietária.
-- **NFR-7 Verificação offline** — o verifier independente não requer o servidor principal nem rede.
+- **NFR-1 Determinism** — the policy and canonical serialization produce the same output for the same input; receipts are hashable and reproducible.
+- **NFR-2 Infrastructure independence** — the core domain does not depend on FastAPI, GitHub, Claude, Codex or any particular database.
+- **NFR-3 Fail-safe** — identity, policy, signature or verification failures close safely (never as `ACCEPT`).
+- **NFR-4 Append-only** — actions, decisions and approvals are not mutable.
+- **NFR-5 Data minimization** — sensitive content is never included in evidence automatically; hash+reference, classification and redaction are supported.
+- **NFR-6 Standards first** — prefer in-toto/DSSE/Sigstore/SCITT/SLSA over proprietary cryptography.
+- **NFR-7 Offline verification** — the independent verifier requires neither the main server nor a network.
 
-## 5. Modelo de domínio (resumo)
+## 5. Domain model (summary)
 
 `WorkRequest` · `Subject` · `Authorization` · `ExecutionSession` · `ActionEvent` ·
 `ArtifactEvidence` · `VerificationResult` · `ApprovalDecision` · `WorkReceipt`.
-Campos detalhados em `ideia-workattest.md` §9; invariantes em `docs/INVARIANTS.md`.
+Field-level detail lives in `schemas/work-receipt.schema.json` and
+`src/workattest/domain/entities.py`; the invariants are in `docs/INVARIANTS.md`.
 
-## 6. Fluxo de demonstração (aceitação do MVP)
+## 6. Demonstration flow (MVP acceptance)
 
-1. Repositório Git limpo; pedido: corrigir um bug específico.
-2. Policy permite alterações **apenas** em determinados diretórios.
-3. Claude Code / Codex executa o trabalho num workspace observado.
-4. WorkAttest recolhe commit inicial, diff, ficheiros, comandos observados, commit final.
-5. Verifier corre testes, lint, typecheck, security check e um check personalizado.
-6. Uma alteração **fora do scope** produz `HOLD` ou `REFUSE`.
-7. Um humano autenticado aprova o commit final.
-8. WorkAttest emite um receipt assinado.
-9. **Outro computador** valida o receipt com a chave pública.
+1. A clean Git repository; the request: fix a specific bug.
+2. The policy allows changes **only** in certain directories.
+3. Claude Code or Codex does the work in an observed workspace.
+4. WorkAttest collects the initial commit, the diff, the files, the observed commands and the final commit.
+5. The Verifier runs tests, lint, typecheck, a security check and a custom check.
+6. A change **outside the scope** produces `HOLD` or `REFUSE`.
+7. An authenticated human approves the final commit.
+8. WorkAttest issues a signed receipt.
+9. **Another computer** validates the receipt with the public key.
 
-## 7. Critérios de aceitação (Definition of Done — MVP)
+## 7. Acceptance criteria (Definition of Done — MVP)
 
-- [ ] Receipt schema v1 publicado (`schemas/work-receipt.schema.json`).
-- [ ] Assinaturas Ed25519 funcionais (sign + verify).
-- [ ] Git adapter (snapshots, diffs, hashes).
-- [ ] Filesystem evidence.
-- [ ] Policy determinística com `ACCEPT/HOLD/REFUSE`.
-- [ ] Verifier independente; agente não escolhe os checks.
-- [ ] Approval ligado ao execution ID e ao result_hash.
-- [ ] Receipt verificável **offline** noutra máquina.
-- [ ] Testes adversariais (tamper de receipt e de evidência detetado).
-- [ ] Threat model documentado (`docs/THREAT-MODEL.md`).
-- [ ] Demo completa Claude/Codex → Git → receipt.
+- [x] Receipt schema v1 published (`schemas/work-receipt.schema.json`).
+- [x] Working Ed25519 signatures (sign and verify).
+- [x] Git adapter (snapshots, diffs, hashes).
+- [x] Filesystem evidence.
+- [x] Deterministic policy with `ACCEPT/HOLD/REFUSE`.
+- [x] Independent verifier; the agent does not choose the checks.
+- [x] Approval bound to the execution ID and the result_hash.
+- [x] Receipt verifiable **offline on another machine** — proven continuously by the
+      conformance vectors in `tests/vectors/`, verified in CI on Linux, macOS and Windows.
+- [x] Adversarial tests (tampering with the receipt and with evidence is detected) —
+      all of T-1…T-12, mapped in `docs/THREAT-MODEL.md` §4.
+- [x] Threat model documented (`docs/THREAT-MODEL.md`).
+- [ ] Full Claude/Codex → Git → receipt demo. The pieces exist and are tested
+      (`docs/DEMO.md`, `workattest observe-git`), but driving the chain from a live agent
+      session is still done by hand.
 
-## 8. Métricas & guardrails
+## 8. Metrics and guardrails
 
-**Métrica principal:** *Accepted work receipts por equipa por semana* (conta apenas com
-artefacto final, checks corridos, policy avaliada, aprovação obtida e assinatura válida).
+**Primary metric:** *accepted work receipts per team per week* (counted only with a final
+artifact, checks run, policy evaluated, approval obtained and a valid signature).
 
-**Guardrails a zero:** receipt verification success < 100% · cross-execution proof
-mismatch · unsigned final receipts · unauthorized impact aceite · mandatory checks
-saltados · falhas de integridade de evidência não detetadas.
+**Guardrails that must stay at zero:** receipt verification success below 100% ·
+cross-execution proof mismatch · unsigned final receipts · unauthorized impact accepted ·
+mandatory checks skipped · undetected evidence integrity failures.
 
-## 9. Fora de âmbito (MVP)
+## 9. Out of scope (MVP)
 
-Dashboard/PWA · multi-tenant SaaS · billing · GitHub App completa · routing de modelos ·
-memória · quotas · compliance EU AI Act/ISO extensivo · SIEM/ServiceNow · blockchain
-própria · custom LLM · agent framework · Enterprise control plane (SSO/RBAC/SoD).
+Dashboard/PWA · multi-tenant SaaS · billing · a complete GitHub App · model routing ·
+memory · quotas · extensive EU AI Act/ISO compliance · SIEM/ServiceNow · a bespoke
+blockchain · a custom LLM · an agent framework · an enterprise control plane
+(SSO/RBAC/SoD).
 
-## 10. Dependências e riscos (ligação)
+## 10. Dependencies and risks (links)
 
-- Riscos e critérios de paragem: `PROJECT_BRIEF.md` §10.
-- **Condição de aprovação vinculativa:** entrevistas de mercado (§19 da ideia) em
-  paralelo; *willingness-to-pay* é o critério de paragem primário.
-- Decisões de standards: `docs/STANDARDS-DECISIONS.md`.
-- Fronteiras de confiança e ameaças: `docs/TRUST-BOUNDARIES.md`, `docs/THREAT-MODEL.md`.
+- Risks and stop criteria: `PROJECT_BRIEF.md` §10.
+- **Binding approval condition:** market interviews running in parallel;
+  willingness-to-pay is the primary stop criterion. See `TASKS.md` TASK-004.
+- Standards decisions: `docs/STANDARDS-DECISIONS.md`.
+- Trust boundaries and threats: `docs/TRUST-BOUNDARIES.md`, `docs/THREAT-MODEL.md`.

@@ -2,81 +2,83 @@
 
 > **Proof before acceptance.**
 
-Modelo de ameaças do MVP. Estrutura: adversários → ativos → ameaças por elo da cadeia
-→ mitigações → testes adversariais que as validam. Enquadramento STRIDE onde aplicável.
+Threat model for the MVP. Structure: adversaries → assets → threats per link in the chain
+→ mitigations → the adversarial tests that validate them. STRIDE framing where it applies.
 
 ---
 
-## 1. Adversários considerados
+## 1. Adversaries considered
 
-| Adversário | Motivação | Capacidade assumida |
+| Adversary | Motivation | Assumed capability |
 |---|---|---|
-| **Agente desonesto/comprometido** | Fazer aceitar trabalho fora do âmbito | Controla a sua própria narrativa; **não** controla os checks nem as chaves |
-| **Insider** (dev/approver) | Aprovar/forjar aceitação indevida | Autenticado; limitado por segregação de funções |
-| **Man-in-the-middle / tamper pós-facto** | Alterar evidência ou receipt após emissão | Acesso ao ficheiro de receipt/evidência |
-| **Verifier evasion** | Fazer passar sem correr checks obrigatórios | Pode tentar escolher/omitir checks |
-| **Replay / cross-execution** | Reutilizar aprovação/prova de outra execução | Acesso a receipts anteriores |
-| **Key compromise** | Assinar receipts forjados | Obtém a chave privada (fora do âmbito de defesa criptográfica — ver limites) |
+| **Dishonest/compromised agent** | Get out-of-scope work accepted | Controls its own narrative; does **not** control the checks or the keys |
+| **Insider** (developer/approver) | Approve or forge an improper acceptance | Authenticated; constrained by segregation of duties |
+| **Man-in-the-middle / after-the-fact tampering** | Alter evidence or a receipt after issuance | Has access to the receipt/evidence file |
+| **Verifier evasion** | Pass without running mandatory checks | May try to choose or omit checks |
+| **Replay / cross-execution** | Reuse an approval or proof from another execution | Has access to earlier receipts |
+| **Key compromise** | Sign forged receipts | Obtains the private key (outside the scope of cryptographic defence — see limits) |
 
-**Fora de âmbito (MVP):** ataques ao hardware/HSM, cadeia de fornecimento das
-dependências, ataques ao próprio modelo de IA, e coação física de um approver.
+**Out of scope (MVP):** attacks on hardware/HSM, the dependency supply chain, attacks on
+the AI model itself, and physical coercion of an approver.
 
-## 2. Ativos a proteger
+## 2. Assets to protect
 
-Signing keys · receipts · evidência (diffs, hashes, outputs) · definições de policy e
-checks · registos de aprovação · a **ligação** entre todos eles.
+Signing keys · receipts · evidence (diffs, hashes, outputs) · policy and check definitions
+· approval records · the **link** between all of them.
 
-## 3. Ameaças por elo (STRIDE) e mitigações
+## 3. Threats per link (STRIDE) and mitigations
 
-| Elo / superfície | Ameaça (STRIDE) | Mitigação | Invariante |
+| Link / surface | Threat (STRIDE) | Mitigation | Invariant |
 |---|---|---|---|
-| Identidade | **S**poofing — nome no request body | Identidade deriva de chave/claim assinado, nunca de string livre | INV-2, INV-10 |
-| Autorização | **E**levation — agir fora do âmbito | Ações validadas contra `allowed_actions/resources`; fora do âmbito → REFUSE | INV-3 |
-| Ações | **R**epudiation / **T**ampering — negar ou alterar o que foi feito | Append-only + hash chain (`previous_event_hash`); fonte autorizada, não o agente | INV-4, INV-11 |
-| Evidência do agente | **T**ampering — declarar falso | Info declarada nunca é evidência verificada; confirmação do sistema afetado | INV-4 |
-| Artefactos | **T**ampering — trocar o artefacto | `before_hash`/`after_hash`; receipt liga-se ao hash exato | INV-6, INV-14 |
-| Verificação | **V**erifier evasion — o agente escolhe/omite checks | Checks definidos pelo operador; agente não os escolhe; ausência ≠ aprovação | INV-5, INV-7, INV-8 |
-| Policy | **T**ampering — trocar a policy silenciosamente | Policy versionada, hashable, incluída/referenciada no receipt | INV-7 |
-| Aprovação | **E**levation / **cross-execution** — aprovar prova de outra execução | Approval liga-se ao `result_hash` da **mesma** execução; identidade autenticada | INV-9, INV-10 |
-| Receipt | **T**ampering pós-facto | Serialização canónica + assinatura; alterações detetáveis | INV-12, INV-13, INV-14 |
-| Verificação externa | **I**nformation / dependência do servidor | Verificação offline só com chave pública + schema | INV-15 |
-| Confidencialidade | **I**nformation disclosure — leak de dados sensíveis na evidência | Conteúdo sensível nunca automático; hash+ref, classificação, redaction, encryption | INV-19 |
-| Decisão | **D**oS / degradação → aceitação insegura | Fail-safe: falhas fecham em HOLD/REFUSE, nunca ACCEPT | INV-20 |
-| Estado terminal | Reabrir REFUSE como ACCEPT | REFUSE só muda com nova avaliação | INV-18 |
+| Identity | **S**poofing — a name in the request body | Identity derives from a key or signed claim, never from a free-text string | INV-2, INV-10 |
+| Authorization | **E**levation — acting out of scope | Actions validated against `allowed_actions/resources`; out of scope → REFUSE | INV-3 |
+| Actions | **R**epudiation / **T**ampering — deny or alter what was done | Append-only plus hash chain (`previous_event_hash`); from an authorized source, not the agent | INV-4, INV-11 |
+| Agent-supplied evidence | **T**ampering — declaring something false | Declared information is never verified evidence; the affected system confirms it | INV-4 |
+| Artifacts | **T**ampering — swapping the artifact | `before_hash`/`after_hash`; the receipt binds to the exact hash | INV-6, INV-14 |
+| Verification | **V**erifier evasion — the agent picks or omits checks | Checks are operator-defined; the agent does not choose them; absence is not approval | INV-5, INV-7, INV-8 |
+| Policy | **T**ampering — swapping the policy silently | Policy is versioned, hashable, and referenced in the receipt | INV-7 |
+| Approval | **E**levation / **cross-execution** — approving proof from another execution | The approval binds to the `result_hash` of the **same** execution; identity is authenticated | INV-9, INV-10 |
+| Receipt | **T**ampering after the fact | Canonical serialization plus signature; changes are detectable | INV-12, INV-13, INV-14 |
+| External verification | **I**nformation / dependence on the server | Offline verification with the public key and schema alone | INV-15 |
+| Confidentiality | **I**nformation disclosure — leaking sensitive data through evidence | Sensitive content is never automatic; hash+ref, classification, redaction, encryption | INV-19 |
+| Decision | **D**oS / degradation leading to unsafe acceptance | Fail-safe: failures close to HOLD/REFUSE, never ACCEPT | INV-20 |
+| Terminal state | Reopening a REFUSE as an ACCEPT | A REFUSE only changes through a new evaluation | INV-18 |
 
-## 4. Testes adversariais (obrigatórios no MVP)
+## 4. Adversarial tests (mandatory in the MVP)
 
-Cada mitigação tem de ter um teste que **falha o receipt** quando o ataque é tentado.
-Todos os doze estão cobertos; a coluna indica onde:
+Every mitigation must have a test that **fails the receipt** when the attack is attempted.
+All twelve are covered; the last column says where.
 
-| | Ataque | Resultado exigido | Teste |
+| | Attack | Required outcome | Test |
 |---|---|---|---|
-| **T-1** | Alterar um byte do receipt após assinatura | verificação falha | `tests/adversarial/test_tamper.py` |
-| **T-2** | Alterar um artefacto após `after_hash` | mismatch detetado | `tests/adversarial/test_tamper.py` |
-| **T-3** | Remover/adulterar um `ActionEvent` no meio da chain | hash chain quebra | `tests/unit/test_events.py` |
-| **T-4** | Agente declara um check como "passado" sem o correr | não conta | `tests/adversarial/test_substitution.py` |
-| **T-5** | Omitir um check obrigatório | HOLD, nunca ACCEPT | `tests/unit/test_policy.py` |
-| **T-6** | Aplicar a aprovação da execução A ao resultado de B | rejeitado | `tests/adversarial/test_tamper.py` · `tests/unit/test_policy.py` |
-| **T-7** | Autorização expirada | REFUSE | `tests/unit/test_policy.py` |
-| **T-8** | Ação fora dos diretórios autorizados | HOLD/REFUSE | `tests/unit/test_policy.py` |
-| **T-9** | Substituir a policy por outra sem atualizar o hash | detetado | `tests/adversarial/test_substitution.py` |
-| **T-10** | Aprovar com identidade não autenticada / nome livre | rejeitado | `tests/adversarial/test_tamper.py` |
-| **T-11** | Verificar receipt sem acesso ao servidor | sucesso (offline) | `tests/adversarial/test_offline_vectors.py` |
-| **T-12** | Reabrir um REFUSE como ACCEPT sem reavaliar | bloqueado | `tests/adversarial/test_tamper.py` |
+| **T-1** | Alter one byte of the receipt after signing | verification fails | `tests/adversarial/test_tamper.py` |
+| **T-2** | Alter an artifact after `after_hash` | mismatch detected | `tests/adversarial/test_tamper.py` |
+| **T-3** | Remove or tamper with an `ActionEvent` mid-chain | the hash chain breaks | `tests/unit/test_events.py` |
+| **T-4** | Agent declares a check "passed" without running it | it does not count | `tests/adversarial/test_substitution.py` |
+| **T-5** | Omit a mandatory check | HOLD, never ACCEPT | `tests/unit/test_policy.py` |
+| **T-6** | Apply execution A's approval to execution B's result | rejected | `tests/adversarial/test_tamper.py` · `tests/unit/test_policy.py` |
+| **T-7** | Expired authorization | REFUSE | `tests/unit/test_policy.py` |
+| **T-8** | Action outside the authorized directories | HOLD/REFUSE | `tests/unit/test_policy.py` |
+| **T-9** | Substitute the policy without updating its hash | detected | `tests/adversarial/test_substitution.py` |
+| **T-10** | Approve with an unauthenticated identity / free-text name | rejected | `tests/adversarial/test_tamper.py` |
+| **T-11** | Verify a receipt with no access to the server | succeeds (offline) | `tests/adversarial/test_offline_vectors.py` |
+| **T-12** | Reopen a REFUSE as an ACCEPT without re-evaluating | blocked | `tests/adversarial/test_tamper.py` |
 
-**T-11** merece nota à parte. É o único que não se demonstra adulterando alguma coisa: os
-vetores em `tests/vectors/` foram assinados noutra máquina, por chaves que já não existem,
-e o CI verifica-os em Linux, macOS e Windows. Ver `tests/vectors/README.md`.
+**T-11** deserves a note of its own. It is the only one not demonstrated by tampering with
+something: the vectors in `tests/vectors/` were signed on another machine, by keys that no
+longer exist, and CI verifies them on Linux, macOS and Windows. See
+`tests/vectors/README.md`.
 
-## 5. Riscos residuais aceites (MVP)
+## 5. Accepted residual risks (MVP)
 
-- **Key compromise** — se a chave privada for exfiltrada, receipts forjados tornam-se
-  possíveis. Mitigação parcial: rotação, escopo curto; evolução: HSM/KMS/keyless. Documentado.
-- **Timestamp fraco** — relógio local não é prova de tempo forte. Evolução: TSA/transparency log.
-- **Integridade do host observador** — assume-se ambiente de observação íntegro.
+- **Key compromise** — if the private key is exfiltrated, forged receipts become possible.
+  Partial mitigation: rotation and short scope; the path forward is HSM/KMS/keyless. Documented.
+- **Weak timestamps** — a local clock is not strong proof of time. The path forward is a
+  TSA or a transparency log.
+- **Observing host integrity** — an intact observation environment is assumed.
 
-## 6. Ligações
+## 6. Links
 
-- Fronteiras e âncoras de confiança: `docs/TRUST-BOUNDARIES.md`.
-- Invariantes referenciados (INV-*): `docs/INVARIANTS.md`.
-- Factos provados/limites: `docs/ACCOUNTABILITY-MODEL.md`.
+- Trust boundaries and anchors: `docs/TRUST-BOUNDARIES.md`.
+- Referenced invariants (INV-*): `docs/INVARIANTS.md`.
+- Proven facts and their limits: `docs/ACCOUNTABILITY-MODEL.md`.

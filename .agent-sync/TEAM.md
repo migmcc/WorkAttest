@@ -57,6 +57,6 @@ Generated: 2026-07-15 (authored manually, non-destructively)
 
 ## Reconsider triggers
 
-- Add **infra-reviewer** when the GitHub App / CI packaging work starts (Fase 6).
+- Add **infra-reviewer** when the GitHub App / CI packaging work starts (Phase 6).
 - Add **ai-reviewer** when agent-observation / MCP adapters are built.
-- Add **database-reviewer** + **data-migration** if the enterprise control plane introduces a database (Fase 7).
+- Add **database-reviewer** + **data-migration** if the enterprise control plane introduces a database (Phase 7).

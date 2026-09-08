@@ -4,163 +4,166 @@
 
 | | |
 |---|---|
-| **Projeto** | WorkAttest (`workattest`) |
-| **Categoria** | Verifiable Work Accountability |
-| **Primeiro mercado** | Alterações de software produzidas ou assistidas por agentes de IA |
-| **Estado** | Brief — validação APROVADA (condicional) |
-| **Fonte** | `ideia-workattest.md` (documento de discovery completo) |
+| **Project** | WorkAttest (`workattest`) |
+| **Category** | Verifiable Work Accountability |
+| **First market** | Software changes produced or assisted by AI agents |
+| **Status** | Brief — validation APPROVED (conditional) |
 
 ---
 
-## 1. Problema
+## 1. Problem
 
-Agentes como Claude Code, Codex e Cursor produzem código, decisões e ações a alta
-velocidade. Logs, traces e históricos de chat ajudam a reconstruir o que aconteceu,
-mas **não constituem uma cadeia de custódia verificável nem uma aceitação formal do
-resultado**. Na maioria dos fluxos atuais continua difícil provar quem iniciou o
-trabalho, que autoridade existia, que ações e artefactos resultaram, que verificações
-correram de facto, e quem aprovou o resultado *exato*.
+Agents such as Claude Code, Codex and Cursor produce code, decisions and actions at high
+speed. Logs, traces and chat histories help reconstruct what happened, but they **do not
+constitute a verifiable chain of custody, nor a formal acceptance of the result**. In most
+current workflows it remains hard to prove who started the work, what authority existed,
+which actions and artifacts resulted, which verifications actually ran, and who approved
+the *exact* result.
 
-## 2. Tese
+## 2. Thesis
 
-A unidade de accountability não é o prompt, a conversa, a tool call, o log nem o
-agente — é o **trabalho aceite**. Um trabalho aceite liga criptograficamente:
+The unit of accountability is not the prompt, the conversation, the tool call, the log or
+the agent — it is **accepted work**. Accepted work cryptographically binds:
 
 ```
-pedido autorizado + identidade (humano+agente) + permissões usadas
-+ ações executadas + artefactos alterados + verificações independentes
-+ exceções/riscos + aprovação autenticada + receipt assinado
+authorized request + identity (human + agent) + permissions used
++ actions executed + artifacts changed + independent verifications
++ exceptions/risks + authenticated approval + signed receipt
 = Verifiable Work Receipt
 ```
 
-A promessa é **processual e probatória**, não de correção:
+The promise is **procedural and evidential**, not one of correctness:
 
-> WorkAttest prova que o processo definido foi seguido e liga esse processo ao
-> resultado aceite. Não garante que o código não tem bugs, que um modelo nunca
-> alucina, nem que uma aprovação humana foi competente.
+> WorkAttest proves that the defined process was followed and binds that process to the
+> accepted result. It does not guarantee that the code is free of bugs, that a model never
+> hallucinates, or that a human approval was competent.
 
-Esta honestidade de âmbito é deliberada e é o que torna o receipt defensável perante
-auditores e juristas.
+This honesty about scope is deliberate, and it is what makes the receipt defensible to
+auditors and lawyers.
 
-## 3. Primeiro wedge — AI Software Change Accountability
+## 3. First wedge — AI Software Change Accountability
 
-Controlar o ciclo de uma alteração de software assistida por IA, demonstrável num PR:
+Control the lifecycle of an AI-assisted software change, demonstrable on a pull request:
 
-`WorkRequest` → identidade + policy → autorização (`ACCEPT/HOLD/REFUSE`) →
-execução observada → snapshots Git + ações → Verifier (checks do operador) →
-aprovação humana autenticada (risco elevado) → **Verifiable Work Receipt assinado** →
-verificação independente offline → status check em GitHub/GitLab.
+`WorkRequest` → identity + policy → authorization (`ACCEPT/HOLD/REFUSE`) → observed
+execution → Git snapshots + actions → Verifier (operator-defined checks) → authenticated
+human approval (high risk) → **signed Verifiable Work Receipt** → independent offline
+verification → status check on GitHub/GitLab.
 
-## 4. Cliente-alvo (ICP inicial)
+## 4. Target customer (initial ICP)
 
-Equipas de engenharia de 20–300 pessoas que já usam coding agents, produzem software
-com impacto financeiro/operacional/regulatório, têm CI + PRs + aprovações, e precisam
-de **demonstrar** como uma alteração foi produzida e aceite — sem substituir GitHub,
-GitLab, Jira ou os agentes existentes. Setores prioritários: fintech, banca, seguros,
-health-tech, automotive, industrial, legal-tech, cibersegurança, B2B regulado.
+Engineering teams of 20–300 people who already use coding agents, produce software with
+financial, operational or regulatory impact, have CI, pull requests and approvals, and need
+to **demonstrate** how a change was produced and accepted — without replacing GitHub,
+GitLab, Jira or the agents they already use. Priority sectors: fintech, banking, insurance,
+health tech, automotive, industrial, legal tech, cybersecurity, regulated B2B.
 
-## 5. Diferenciação
+## 5. Differentiation
 
-WorkAttest **não** é editor, agente, framework de agentes, observabilidade, SIEM, GRC
-genérico, gestor de projetos ou IAM. É uma **camada neutra** entre estes sistemas.
+WorkAttest is **not** an editor, an agent, an agent framework, observability, a SIEM,
+generic GRC, a project manager or an IAM. It is a **neutral layer** between those systems.
 
-Outras ferramentas provam que um agente chamou uma tool, que um utilizador iniciou
-sessão, que uma policy permitiu uma ação, ou que um commit passou no CI. WorkAttest
-prova **adicionalmente** que o commit corresponde ao pedido autorizado, que os
-artefactos concretos estão identificados, que os checks aplicáveis correram, que a
-evidência pertence àquela versão, que nenhuma obrigação foi omitida, e que a pessoa
-responsável aceitou *exatamente* aquele resultado — verificável fora do WorkAttest.
+Other tools prove that an agent called a tool, that a user started a session, that a policy
+allowed an action, or that a commit passed CI. WorkAttest **additionally** proves that the
+commit corresponds to the authorized request, that the concrete artifacts are identified,
+that the applicable checks ran, that the evidence belongs to that version, that no
+obligation was skipped, and that the responsible person accepted *exactly* that result —
+verifiable outside WorkAttest.
 
-## 6. Estratégia técnica
+## 6. Technical strategy
 
-- **Core determinístico e independente de infraestrutura** (sem dependência de FastAPI,
-  GitHub, Claude, Codex ou DB específica): entidades, estados, invariantes, decisões,
-  serialização canónica.
-- **Standards-first** — evitar cripto proprietária: in-toto, DSSE, Sigstore/Rekor,
+- **A deterministic core, independent of infrastructure** (no dependency on FastAPI,
+  GitHub, Claude, Codex or a particular database): entities, states, invariants, decisions,
+  canonical serialization.
+- **Standards first** — avoid proprietary cryptography: in-toto, DSSE, Sigstore/Rekor,
   SCITT, OIDC, SPIFFE/SPIRE, SLSA, SBOM, Git signing, GitHub attestations.
-- **Reuso disciplinado** — ProjectPilot, Taevdar e Agent Trust Gate como clientes /
-  doadores de componentes, **não** como núcleo. Não herdar o anti-padrão "estado JSON
-  editável como prova final".
+- **Disciplined reuse** — ProjectPilot, Taevdar and Agent Trust Gate as customers or
+  component donors, **not** as the core. Do not inherit the anti-pattern of "editable JSON
+  state as final proof".
 
-## 7. MVP — âmbito
+## 7. MVP scope
 
-**Objetivo:** demonstrar que uma alteração de software pode ser autorizada, observada,
-verificada, aprovada e transformada num receipt validável **offline**.
+**Goal:** demonstrate that a software change can be authorized, observed, verified,
+approved and turned into a receipt that validates **offline**.
 
-**Inclui:** receipt schema v1 · assinaturas Ed25519 · Git adapter · filesystem
-evidence · policy determinística com `ACCEPT/HOLD/REFUSE` · verifier independente ·
-approval ligado ao execution ID · verificação offline · testes adversariais (tamper) ·
-threat model documentado · demo Claude/Codex → Git → receipt.
+**Includes:** receipt schema v1 · Ed25519 signatures · Git adapter · filesystem evidence ·
+a deterministic policy with `ACCEPT/HOLD/REFUSE` · an independent verifier · approval bound
+to the execution ID · offline verification · adversarial tamper tests · a documented threat
+model · a Claude/Codex → Git → receipt demo.
 
-**CLI mínima:** `workattest init | request create | policy evaluate | execution
+**Minimal CLI:** `workattest init | request create | policy evaluate | execution
 start/observe | evidence add | verify run | approve | receipt issue | receipt verify`.
 
-**Fora do MVP:** dashboard/PWA · multi-tenant SaaS · billing · GitHub App completa ·
-compliance EU AI Act/ISO extensivo · SIEM/ServiceNow · blockchain própria · custom LLM
-· agent framework. *O MVP prova o modelo de accountability, não a amplitude da plataforma.*
+**Outside the MVP:** dashboard/PWA · multi-tenant SaaS · billing · a complete GitHub App ·
+extensive EU AI Act/ISO compliance · SIEM/ServiceNow · a bespoke blockchain · a custom LLM
+· an agent framework. *The MVP proves the accountability model, not the breadth of a
+platform.*
 
-## 8. Invariantes-chave (v1)
+## 8. Key invariants (v1)
 
-Nenhuma execução sem `WorkRequest` e autorização válida · info declarada pelo agente
-nunca é evidência verificada · o agente nunca escolhe os checks que o verificam ·
-ausência de checks obrigatórios ≠ aprovação · um approval só aceita o resultado da
-mesma execução · ações e decisões são append-only · todo receipt é canónico, assinado
-e verificável externamente · alterações à evidência são detetáveis · falhas de
-identidade/policy/assinatura/verificação fecham em segurança. *(Lista completa: §10 da ideia.)*
+No execution without a `WorkRequest` and a valid authorization · information declared by
+the agent is never verified evidence · the agent never chooses the checks that verify it ·
+absent mandatory checks are not an approval · an approval only accepts the result of the
+same execution · actions and decisions are append-only · every receipt is canonical, signed
+and externally verifiable · changes to evidence are detectable · identity, policy,
+signature and verification failures close safely. *(The full list is in
+`docs/INVARIANTS.md`.)*
 
-## 9. Critérios de sucesso (MVP)
+## 9. Success criteria (MVP)
 
-Uma pessoa externa, recebendo artefacto + receipt + chave/cadeia de identidade +
-referências de evidência, confirma independentemente: (1) era o trabalho autorizado;
-(2) aquela execução produziu o artefacto; (3) os checks aplicáveis correram; (4) o
-resultado corresponde aos hashes; (5) o responsável aprovou exatamente aquele
-resultado; (6) o receipt não foi alterado.
+An outside person, given the artifact, the receipt, the key or identity chain, and the
+evidence references, can independently confirm: (1) this was the authorized work; (2) that
+execution produced the artifact; (3) the applicable checks ran; (4) the result matches the
+hashes; (5) the responsible person approved exactly that result; (6) the receipt was not
+altered.
 
-**Métrica principal:** *Accepted work receipts por equipa por semana* (só conta com
-artefacto final, checks corridos, policy avaliada, aprovação obtida e assinatura válida).
-**Guardrails a zero:** proof mismatch cross-execution, unsigned final receipts,
-unauthorized impact aceite, mandatory checks saltados, falhas de integridade não detetadas.
+**Primary metric:** *accepted work receipts per team per week* (counted only with a final
+artifact, checks run, policy evaluated, approval obtained and a valid signature).
+**Guardrails that must stay at zero:** cross-execution proof mismatch, unsigned final
+receipts, unauthorized impact accepted, mandatory checks skipped, undetected integrity
+failures.
 
-## 10. Riscos e critérios de paragem
+## 10. Risks and stop criteria
 
-| Risco | Severidade | Mitigação |
+| Risk | Severity | Mitigation |
 |---|---|---|
-| **Willingness-to-pay não provada** | **Existencial** | Vender redução de risco; demonstrar reconstrução de incidente; design partners com dor concreta |
-| Categoria demasiado ampla / custo de educação | Alto | Começar só por software changes; demo num PR; evitar claims de "AI governance" |
-| Standards/vendors (GitHub Attestations, Sigstore, SLSA) invadem a lane | Alto | Integrar standards, não competir; diferenciar no *trabalho aceite* + aprovação humana ligada ao artefacto exato |
-| Execution Gateway (observar sem confiar no agente) é a peça mais difícil/intrusiva | Médio-Alto | MVP limita-se a snapshots Git + comandos observados; evitar scope creep |
-| Receipt sem valor jurídico/de auditoria | Médio | Envolver auditores/juristas cedo; documentar limites; evidence mapping |
-| Logging cria novos riscos | Médio | Minimização, redaction, encryption, evidence references, retenção configurável |
+| **Willingness-to-pay unproven** | **Existential** | Sell risk reduction; demonstrate incident reconstruction; find design partners with concrete pain |
+| Category too broad / cost of educating the market | High | Start with software changes only; demo on a pull request; avoid "AI governance" claims |
+| Standards and vendors (GitHub Attestations, Sigstore, SLSA) move into the lane | High | Integrate standards rather than compete; differentiate on *accepted work* plus human approval bound to the exact artifact |
+| The Execution Gateway (observing without trusting the agent) is the hardest, most intrusive piece | Medium-High | The MVP limits itself to Git snapshots and observed commands; avoid scope creep |
+| A receipt with no legal or audit value | Medium | Involve auditors and lawyers early; document the limits; map evidence |
+| Logging creates new risks | Medium | Minimization, redaction, encryption, evidence references, configurable retention |
 
-**Parar se:** não existe willingness to pay · receipts não alteram decisões de
-procurement/audit/release · integrações necessárias tornam o produto inviável ·
-concorrentes oferecem fluxo completo e acessível antes da validação.
+**Stop if:** there is no willingness to pay · receipts do not change procurement, audit or
+release decisions · the integrations required make the product unviable · competitors offer
+a complete, accessible flow before validation.
 
 ## 11. Roadmap (macro)
 
-Fase 0 Discovery/contratos → Fase 1 Core determinístico → Fase 2 Cryptographic
-receipts → Fase 3 Software change adapter (Git) → Fase 4 ProjectPilot integration →
-Fase 5 Taevdar control plane → Fase 6 GitHub App → Fase 7 Enterprise control plane.
+Phase 0 discovery and contracts → Phase 1 deterministic core → Phase 2 cryptographic
+receipts → Phase 3 software change adapter (Git) → Phase 4 ProjectPilot integration →
+Phase 5 Taevdar control plane → Phase 6 GitHub App → Phase 7 enterprise control plane.
+Detail in `docs/ROADMAP.md`.
 
-## 12. Decisão de validação (registada)
+## 12. Validation decision (recorded)
 
-**APROVADO (condicional)** — fonte: manual, via ProjectPilot.
+**APPROVED (conditional)** — source: manual, via ProjectPilot.
 
-Tese sólida (unidade de accountability = trabalho aceite); MVP tecnicamente viável e
-bem delimitado; âmbito honesto (processual/probatório, não correção). **O risco
-dominante é de mercado, não de construção.**
+A sound thesis (the unit of accountability is accepted work); an MVP that is technically
+feasible and well bounded; an honest scope (procedural and evidential, not correctness).
+**The dominant risk is market risk, not build risk.**
 
-**Condição vinculativa:** executar as entrevistas de validação de mercado (§19 da
-ideia) **em paralelo** com a Fase 0/1, e tratar *willingness-to-pay* como o critério
-de paragem primário (§21). Esta aprovação cobre **construir o core do MVP + validar a
-procura** — não construir a plataforma enterprise completa.
+**Binding condition:** run the market validation interviews **in parallel** with Phases
+0 and 1, and treat willingness-to-pay as the primary stop criterion. This approval covers
+**building the MVP core and validating demand** — not building the full enterprise
+platform. Tracked as TASK-004 in `TASKS.md`.
 
-## 13. Próxima sequência de trabalho
+## 13. Next sequence of work
 
-1. Avançar no lifecycle ProjectPilot (setup-advice → execução).
-2. Produzir os contratos da Fase 0: `ACCOUNTABILITY-MODEL.md`, `THREAT-MODEL.md`,
-   `TRUST-BOUNDARIES.md`, `INVARIANTS.md`, `RECEIPT-SCHEMA.json`,
+1. Advance through the ProjectPilot lifecycle (setup-advice → execution).
+2. Produce the Phase 0 contracts: `ACCOUNTABILITY-MODEL.md`, `THREAT-MODEL.md`,
+   `TRUST-BOUNDARIES.md`, `INVARIANTS.md`, `schemas/work-receipt.schema.json`,
    `COMPETITIVE-MATRIX.md`, `STANDARDS-DECISIONS.md`.
-3. Iniciar as entrevistas de mercado (§19) em paralelo.
-4. Gate da Fase 0: modelo de confiança revisto · receipt v1 aprovado · primeiro caso
-   de uso fechado · zero claims de "garantia absoluta".
+3. Start the market interviews in parallel.
+4. Phase 0 gate: trust model reviewed · receipt v1 approved · first use case closed · zero
+   "absolute guarantee" claims.

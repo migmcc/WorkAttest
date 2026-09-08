@@ -10,15 +10,15 @@ partial · `[x]` done.
 
 ---
 
-## Fase 0 — finish discovery & contracts
+## Phase 0 — finish discovery & contracts
 
 - [ ] **TASK-001** Review & ratify the receipt schema v1 (`schemas/work-receipt.schema.json`) with a threat lens. `depends_on: null` — route: security-reviewer + architect.
 - [ ] **TASK-002** Cross-check INVARIANTS ↔ THREAT-MODEL ↔ receipt schema for full coverage (every INV has a test hook and a schema anchor). `depends_on: null` — route: architect.
 - [x] **TASK-003** Draft `SECURITY.md` (coordinated disclosure, threat model pointer, key-handling policy). `depends_on: null` — route: security-reviewer.
 - [ ] **TASK-004** Start market-validation interviews (idea §19) — **binding approval condition**; track willingness-to-pay. `depends_on: null` — route: human (not an agent task).
-- [ ] **TASK-005** Fase 0 gate review: trust model reviewed, receipt v1 approved, first use case closed, zero absolute-guarantee claims. `depends_on: TASK-001, TASK-002` — route: architect + compliance-reviewer.
+- [ ] **TASK-005** Phase 0 gate review: trust model reviewed, receipt v1 approved, first use case closed, zero absolute-guarantee claims. `depends_on: TASK-001, TASK-002` — route: architect + compliance-reviewer.
 
-## Fase 1 — core determinístico
+## Phase 1 — deterministic core
 
 - [x] **TASK-101** Scaffold repo: `pyproject.toml`, `src/workattest/` package layout (domain/identity/policy/... per idea §16), `tests/` tree, README, LICENSE. `depends_on: TASK-005` — route: architect → python-reviewer.
 - [/] **TASK-102** Canonical JSON serialization (RFC 8785 / JCS) with property-based round-trip tests (INV-12). Implementation and unit tests exist; RFC 8785 conformance and property-based coverage remain open. `depends_on: TASK-101` — route: tdd-guide → python-reviewer.
@@ -27,9 +27,9 @@ partial · `[x]` done.
 - [x] **TASK-105** Deterministic policy engine → `ACCEPT/HOLD/REFUSE`, versioned + hashable (INV-7, INV-8, INV-18, INV-20). `depends_on: TASK-103` — route: security-reviewer.
 - [x] **TASK-106** Storage interfaces (ports) + local filesystem adapter. `depends_on: TASK-103` — route: python-reviewer.
 - [/] **TASK-107** Minimal CLI skeleton wiring the above commands. The operational CLI provides `init`, `keygen`, `demo`, `observe-git`, and receipt operations; the originally named `request create` and `policy evaluate` commands remain open. `depends_on: TASK-105, TASK-106` — route: python-reviewer.
-- [ ] **TASK-108** Fase 1 gate review: domain infra-independent, policy deterministic + tested, invariants covered. `depends_on: TASK-102, TASK-104, TASK-105, TASK-107` — route: code-reviewer + security-reviewer.
+- [ ] **TASK-108** Phase 1 gate review: domain infra-independent, policy deterministic + tested, invariants covered. `depends_on: TASK-102, TASK-104, TASK-105, TASK-107` — route: code-reviewer + security-reviewer.
 
-## Backlog (Fase 2+ — crypto receipts, Git adapter, verifier)
+## Backlog (Phase 2+ — crypto receipts, Git adapter, verifier)
 
 - [x] **TASK-201** Ed25519 signing + verification + key model (INV-13/15).
 - [x] **TASK-202** Receipt issuer (canonical + signed) and offline verifier (`receipt verify`).

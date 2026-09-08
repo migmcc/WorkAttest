@@ -2,74 +2,75 @@
 
 > **Proof before acceptance.**
 
-Decisões sobre que standards adotar, avaliar ou adiar. **Princípio:** WorkAttest liga
-standards existentes num modelo de aceitação do trabalho — **não reinventa cada
-componente**. Evitar protocolos criptográficos proprietários quando já existe standard
-adequado.
+Decisions about which standards to adopt, evaluate or defer. **Principle:** WorkAttest
+connects existing standards into a model of accepted work — it does **not reinvent each
+component**. Avoid proprietary cryptographic protocols wherever an adequate standard
+already exists.
 
-Formato: cada decisão é um mini-ADR (Adotar / Avaliar / Adiar / Rejeitar) com razão.
+Format: each decision is a mini-ADR (Adopt / Evaluate / Defer / Reject) with its reason.
 
 ---
 
-## 1. Quadro-resumo
+## 1. Summary table
 
-| Standard | Domínio | Decisão (MVP) | Razão |
+| Standard | Domain | Decision (MVP) | Reason |
 |---|---|---|---|
-| **Ed25519** | Assinaturas | **Adotar** | Simples, rápido, deterministicamente verificável offline |
-| **JSON Canonicalization (RFC 8785 / JCS)** | Serialização canónica | **Adotar** | Necessário para hashes/receipts reprodutíveis (INV-12) |
-| **DSSE** (Dead Simple Signing Envelope) | Envelope de assinatura | **Adotar** | Envelope standard para payloads assinados; base do in-toto |
-| **in-toto attestations** | Formato de atestação | **Adotar (alinhar)** | Alinhar o receipt com predicados in-toto para interoperar com o ecossistema supply-chain |
-| **Sigstore (cosign/Fulcio)** | Keyless signing | **Avaliar** | Reduz gestão de chaves; útil na evolução, não bloqueante no MVP |
-| **Rekor / transparency log** | Prova de inclusão/tempo | **Avaliar / Adiar** | MVP funciona offline; transparency service (público ou privado) entra depois |
-| **SCITT** | Transparência de supply-chain | **Avaliar** | Standard emergente IETF; monitorizar para o control plane empresarial |
-| **SLSA** | Níveis de proveniência | **Alinhar** | Enquadrar os receipts como evidência de proveniência; útil comercialmente |
-| **OIDC** | Identidade em CI | **Adotar (CI)** | Identidade de workload em pipelines sem chaves de longa duração |
-| **SPIFFE/SPIRE** | Workload identity | **Adiar** | Enterprise; sobredimensionado para o MVP |
-| **Git commit signing** | Autoria | **Adotar** | Fonte de identidade e integridade já disponível no adapter |
-| **GitHub Artifact Attestations** | Proveniência de build | **Avaliar (interop)** | Potencial concorrente **e** ponto de integração — mapear o delta |
-| **OpenTelemetry** | Observabilidade | **Adiar** | Não é core; útil para operação futura |
-| **CycloneDX / SPDX (SBOM)** | Inventário de componentes | **Adiar** | Fora do primeiro wedge; relevante em release receipts |
-| **RFC 3161 (TSA)** | Timestamp forte | **Adiar** | Endereça o risco de "timestamp fraco" na evolução |
-| **MCP / protocolos de agentes** | Interop com agentes | **Avaliar** | Superfície de observação de ações de agentes |
+| **Ed25519** | Signatures | **Adopt** | Simple, fast, deterministically verifiable offline |
+| **JSON Canonicalization (RFC 8785 / JCS)** | Canonical serialization | **Adopt** | Required for reproducible hashes and receipts (INV-12) |
+| **DSSE** (Dead Simple Signing Envelope) | Signature envelope | **Adopt** | Standard envelope for signed payloads; the basis of in-toto |
+| **in-toto attestations** | Attestation format | **Adopt (align)** | Align the receipt with in-toto predicates to interoperate with the supply-chain ecosystem |
+| **Sigstore (cosign/Fulcio)** | Keyless signing | **Evaluate** | Reduces key management; useful later, not blocking for the MVP |
+| **Rekor / transparency log** | Inclusion and time proof | **Evaluate / Defer** | The MVP works offline; a transparency service (public or private) comes afterwards |
+| **SCITT** | Supply-chain transparency | **Evaluate** | Emerging IETF standard; monitor for the enterprise control plane |
+| **SLSA** | Provenance levels | **Align** | Frames receipts as provenance evidence; commercially useful |
+| **OIDC** | Identity in CI | **Adopt (CI)** | Workload identity in pipelines without long-lived keys |
+| **SPIFFE/SPIRE** | Workload identity | **Defer** | Enterprise-scale; oversized for the MVP |
+| **Git commit signing** | Authorship | **Adopt** | A source of identity and integrity already available in the adapter |
+| **GitHub Artifact Attestations** | Build provenance | **Evaluate (interop)** | Both a potential competitor **and** an integration point — map the delta |
+| **OpenTelemetry** | Observability | **Defer** | Not core; useful for future operations |
+| **CycloneDX / SPDX (SBOM)** | Component inventory | **Defer** | Outside the first wedge; relevant for release receipts |
+| **RFC 3161 (TSA)** | Strong timestamps | **Defer** | Addresses the "weak timestamp" risk as the system evolves |
+| **MCP / agent protocols** | Agent interoperability | **Evaluate** | A surface for observing agent actions |
 
-## 2. Decisões-chave (detalhe)
+## 2. Key decisions (in detail)
 
-### D-1 — Assinatura: Ed25519 + DSSE. **Adotar.**
-Ed25519 para as chaves; DSSE como envelope. Mantém a verificação offline simples e
-alinha com in-toto. *Alternativa rejeitada no MVP:* esquemas proprietários (violam o
-princípio de não reinventar cripto).
+### D-1 — Signing: Ed25519 + DSSE. **Adopt.**
+Ed25519 for the keys; DSSE as the envelope. Keeps offline verification simple and aligns
+with in-toto. *Alternative rejected for the MVP:* proprietary schemes, which violate the
+principle of not reinventing cryptography.
 
-### D-2 — Canonicalização: RFC 8785 (JCS). **Adotar.**
-Sem serialização canónica não há hash reprodutível nem INV-12/14. JCS é standard e
-determinístico.
+### D-2 — Canonicalization: RFC 8785 (JCS). **Adopt.**
+Without canonical serialization there is no reproducible hash, and no INV-12/14. JCS is
+standard and deterministic.
 
-### D-3 — Atestação: alinhar o receipt com in-toto. **Adotar (alinhar).**
-O `WorkReceipt` é conceptualmente um predicado in-toto enriquecido (autorização +
-aprovação humana + decisão de policy). Alinhar o schema para poder emitir/consumir
-atestações in-toto sem lock-in.
+### D-3 — Attestation: align the receipt with in-toto. **Adopt (align).**
+The `WorkReceipt` is conceptually an enriched in-toto predicate (authorization + human
+approval + policy decision). Align the schema so in-toto attestations can be issued and
+consumed without lock-in.
 
-### D-4 — Transparência: offline primeiro, log depois. **Adiar.**
-O MVP tem de verificar **sem** servidor (INV-15). Rekor/SCITT/transparency privado
-entram como reforço opcional (prova de inclusão e tempo), não como dependência.
+### D-4 — Transparency: offline first, log later. **Defer.**
+The MVP must verify **without** a server (INV-15). Rekor, SCITT or a private transparency
+service come in as optional reinforcement — proof of inclusion and time — never as a
+dependency.
 
-### D-5 — Posicionamento vs. GitHub Attestations / Sigstore / SLSA. **Avaliar (crítico).**
-Estes cobrem "este commit veio de um build autorizado". O **delta** do WorkAttest é
-ligar *trabalho aceite + aprovação humana autenticada* ao artefacto exato. Esta análise
-alimenta `docs/COMPETITIVE-MATRIX.md` e é um risco estratégico (não competir com IAM
-nem com proveniência de build; diferenciar no *aceite*).
+### D-5 — Positioning against GitHub Attestations / Sigstore / SLSA. **Evaluate (critical).**
+These cover "this commit came from an authorized build". WorkAttest's **delta** is binding
+*accepted work plus an authenticated human approval* to the exact artifact. This analysis
+feeds `docs/COMPETITIVE-MATRIX.md` and carries strategic risk: do not compete with IAM or
+with build provenance; differentiate on **acceptance**.
 
-### D-6 — Identidade: chaves locais + Git + OIDC (CI) no MVP; SSO/SPIFFE depois. **Adotar/Adiar.**
-Cobrir os casos reais do primeiro wedge sem construir um IAM.
+### D-6 — Identity: local keys + Git + OIDC (CI) in the MVP; SSO/SPIFFE later. **Adopt/Defer.**
+Cover the real cases of the first wedge without building an IAM.
 
-## 3. Critérios para promover um "Avaliar" a "Adotar"
+## 3. Criteria for promoting an "Evaluate" to an "Adopt"
 
-- Existe um caso de uso do primeiro wedge que o exige.
-- Não obriga a rede nem quebra a verificação offline do MVP.
-- Reduz confiança cega (aumenta verificabilidade independente).
-- Tem implementação estável e testável.
+- A use case in the first wedge requires it.
+- It does not mandate network access or break the MVP's offline verification.
+- It reduces blind trust (it increases independent verifiability).
+- It has a stable, testable implementation.
 
-## 4. Ligações
+## 4. Links
 
-- Impacto na confiança: `docs/TRUST-BOUNDARIES.md`.
-- Diferenciação vs. concorrentes: `docs/COMPETITIVE-MATRIX.md`.
-- Estrutura do receipt: `schemas/work-receipt.schema.json`.
+- Impact on trust: `docs/TRUST-BOUNDARIES.md`.
+- Differentiation against competitors: `docs/COMPETITIVE-MATRIX.md`.
+- Receipt structure: `schemas/work-receipt.schema.json`.

@@ -2,73 +2,73 @@
 
 > **Proof before acceptance.**
 
-Onde WorkAttest se distingue. **Princípio de posicionamento:** WorkAttest **não**
-compete como editor, agente, framework de agentes, observabilidade, SIEM, GRC genérico,
-gestor de projetos, ferramenta de testes ou IAM. É uma **camada neutra** entre eles.
+Where WorkAttest is different. **Positioning principle:** WorkAttest does **not** compete
+as an editor, an agent, an agent framework, observability, a SIEM, generic GRC, a project
+manager, a testing tool or an IAM. It is a **neutral layer** between them.
 
 ---
 
-## 1. O eixo de diferenciação
+## 1. The axis of differentiation
 
-A maioria das ferramentas prova **fragmentos**:
+Most tools prove **fragments**:
 
-- um agente chamou uma ferramenta;
-- um utilizador iniciou uma sessão;
-- uma policy permitiu uma ação;
-- um commit passou no CI.
+- an agent called a tool;
+- a user started a session;
+- a policy allowed an action;
+- a commit passed CI.
 
-WorkAttest prova **adicionalmente** que:
+WorkAttest **additionally** proves that:
 
-- o commit corresponde ao **pedido autorizado**;
-- os artefactos concretos estão identificados;
-- os checks aplicáveis foram executados (e o agente não os escolheu);
-- a evidência pertence àquela versão;
-- **nenhuma obrigação foi omitida**;
-- a pessoa responsável aceitou **exatamente** aquele resultado;
-- o receipt continua verificável **fora** do WorkAttest.
+- the commit corresponds to the **authorized request**;
+- the concrete artifacts are identified;
+- the applicable checks ran (and the agent did not choose them);
+- the evidence belongs to that version;
+- **no obligation was skipped**;
+- the responsible person accepted **exactly** that result;
+- the receipt remains verifiable **outside** WorkAttest.
 
-## 2. Matriz por categoria
+## 2. Matrix by category
 
-Legenda: ✅ cobre · ◐ parcial · ✗ não cobre · — fora de âmbito da categoria
+Legend: ✅ covers · ◐ partial · ✗ does not cover · — outside that category's scope
 
-| Capacidade | Coding agents (Claude/Codex/Cursor) | Observabilidade / traces | SIEM | CI/CD + status checks | Supply-chain (Sigstore/in-toto/SLSA) | GitHub Artifact Attestations | GRC genérico | **WorkAttest** |
+| Capability | Coding agents (Claude/Codex/Cursor) | Observability / traces | SIEM | CI/CD + status checks | Supply chain (Sigstore/in-toto/SLSA) | GitHub Artifact Attestations | Generic GRC | **WorkAttest** |
 |---|---|---|---|---|---|---|---|---|
-| Produzir a alteração | ✅ | ✗ | ✗ | ◐ | ✗ | ✗ | ✗ | — (integra) |
-| Registar o que aconteceu | ◐ | ✅ | ✅ | ◐ | ✗ | ✗ | ◐ | ◐ (foco no aceite) |
-| Autorização com âmbito **antes** da ação | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ | ◐ | ✅ |
-| Provar que os checks **correram** | ✗ | ✗ | ✗ | ◐ | ◐ | ◐ | ✗ | ✅ |
-| Agente **não** escolhe os checks | ✗ | — | — | ✗ | — | — | ✗ | ✅ |
-| Proveniência do artefacto (hash) | ✗ | ✗ | ✗ | ◐ | ✅ | ✅ | ✗ | ✅ |
-| **Aprovação humana ligada ao artefacto exato** | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ | ◐ | ✅ |
-| "Nenhuma obrigação omitida" (completude da policy) | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ | ◐ | ✅ |
-| Verificação **offline** por terceiro | ✗ | ✗ | ✗ | ✗ | ◐ | ◐ | ✗ | ✅ |
-| Neutro entre stacks/agentes | — | ◐ | ◐ | ✗ | ✅ | ✗ | ◐ | ✅ |
+| Produce the change | ✅ | ✗ | ✗ | ◐ | ✗ | ✗ | ✗ | — (integrates) |
+| Record what happened | ◐ | ✅ | ✅ | ◐ | ✗ | ✗ | ◐ | ◐ (focused on acceptance) |
+| Scoped authorization **before** the action | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ | ◐ | ✅ |
+| Prove the checks **ran** | ✗ | ✗ | ✗ | ◐ | ◐ | ◐ | ✗ | ✅ |
+| The agent does **not** choose the checks | ✗ | — | — | ✗ | — | — | ✗ | ✅ |
+| Artifact provenance (hash) | ✗ | ✗ | ✗ | ◐ | ✅ | ✅ | ✗ | ✅ |
+| **Human approval bound to the exact artifact** | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ | ◐ | ✅ |
+| "No obligation skipped" (policy completeness) | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ | ◐ | ✅ |
+| **Offline** third-party verification | ✗ | ✗ | ✗ | ✗ | ◐ | ◐ | ✗ | ✅ |
+| Neutral across stacks and agents | — | ◐ | ◐ | ✗ | ✅ | ✗ | ◐ | ✅ |
 
-## 3. Concorrentes de fronteira (os que mais se aproximam)
+## 3. Adjacent competitors (the closest ones)
 
-| Concorrente | Sobreposição | Delta do WorkAttest | Risco |
+| Competitor | Overlap | WorkAttest's delta | Risk |
 |---|---|---|---|
-| **GitHub Artifact Attestations** | Proveniência de build assinada, verificável | Não modela *autorização prévia* nem *aprovação humana do resultado exato* como aceitação formal | **Alto** — incumbente pode estender-se; mitigar integrando, não competindo |
-| **Sigstore + in-toto + SLSA** | Assinatura, atestação, níveis de proveniência | WorkAttest **alinha-se** e acrescenta a camada de *trabalho aceite* (policy + approval + custódia) | Médio — mais aliado que rival; usar como base |
-| **Observabilidade de agentes** (LLM tracing) | Regista tool calls e sessões | Trace ≠ cadeia de custódia verificável nem aceitação assinada | Baixo — complementar |
-| **GRC / audit tooling** | Workflow de aprovação e evidência | Aprovação declarativa vs. aprovação ligada criptograficamente ao artefacto | Médio — vender como camada de prova sob o GRC |
+| **GitHub Artifact Attestations** | Signed, verifiable build provenance | Does not model *prior authorization* or *human approval of the exact result* as formal acceptance | **High** — the incumbent could extend into it; mitigate by integrating rather than competing |
+| **Sigstore + in-toto + SLSA** | Signing, attestation, provenance levels | WorkAttest **aligns** with them and adds the *accepted work* layer (policy + approval + custody) | Medium — more ally than rival; use as the foundation |
+| **Agent observability** (LLM tracing) | Records tool calls and sessions | A trace is neither a verifiable chain of custody nor a signed acceptance | Low — complementary |
+| **GRC / audit tooling** | Approval workflow and evidence | Declarative approval versus approval bound cryptographically to the artifact | Medium — sell as the proof layer beneath GRC |
 
-## 4. Posicionamento de uma frase
+## 4. One-sentence positioning
 
-> Sigstore/SLSA provam **de onde veio o artefacto**. WorkAttest prova **que aquele
-> trabalho foi autorizado, verificado e aceite pela pessoa responsável** — e liga isso
-> ao artefacto exato, verificável offline.
+> Sigstore and SLSA prove **where the artifact came from**. WorkAttest proves **that the
+> work was authorized, verified and accepted by the responsible person** — and binds that
+> to the exact artifact, verifiable offline.
 
-## 5. Implicações estratégicas
+## 5. Strategic implications
 
-1. **Integrar, não competir**, com identidade/IAM e proveniência de build.
-2. O fosso defensável é a **aceitação com custódia** (autorização + policy + approval
-   humano ligado ao artefacto), não a assinatura em si.
-3. O risco competitivo mais real é um incumbente (GitHub) estender-se ao "aceite".
-   Contramedida: profundidade no primeiro wedge + neutralidade entre stacks + valor
-   para auditoria antes que o incumbente lá chegue.
+1. **Integrate, do not compete**, with identity/IAM and build provenance.
+2. The defensible moat is **acceptance with custody** (authorization + policy + human
+   approval bound to the artifact), not signing itself.
+3. The most real competitive risk is an incumbent (GitHub) extending into "acceptance".
+   Counter: depth in the first wedge, neutrality across stacks, and audit value delivered
+   before the incumbent gets there.
 
-## 6. Ligações
+## 6. Links
 
-- Decisões de standards que sustentam a interop: `docs/STANDARDS-DECISIONS.md`.
-- O que exatamente se prova: `docs/ACCOUNTABILITY-MODEL.md`.
+- The standards decisions behind interoperability: `docs/STANDARDS-DECISIONS.md`.
+- Exactly what is proven: `docs/ACCOUNTABILITY-MODEL.md`.

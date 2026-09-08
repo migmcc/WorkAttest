@@ -2,78 +2,80 @@
 
 > **Proof before acceptance.**
 
-Onde a confiança **começa** e **acaba**. Um receipt só tem valor se o seu consumidor
-souber exatamente em que raízes de confiança está a assentar e o que fica fora delas.
+Where trust **begins** and where it **ends**. A receipt is only worth something if whoever
+consumes it knows exactly which roots of trust it rests on, and what falls outside them.
 
 ---
 
-## 1. Princípio
+## 1. Principle
 
-WorkAttest **não** confia no relato do agente. Sempre que possível, obtém confirmação
-do sistema afetado (Git, filesystem, CI), não da narrativa do executor. A evidência
-declarada pelo agente é tratada como *afirmação*, nunca como *facto verificado*.
+WorkAttest does **not** trust the agent's account of events. Wherever possible it obtains
+confirmation from the affected system (Git, filesystem, CI) rather than from the executor's
+narrative. Evidence declared by the agent is treated as a *claim*, never as a *verified
+fact*.
 
-## 2. Raízes de confiança (trust anchors)
+## 2. Trust anchors
 
-| Âncora | O que ancora | Grau de confiança | Substituível por |
+| Anchor | What it anchors | Degree of trust | Can be replaced by |
 |---|---|---|---|
-| Chaves Ed25519 (signing keys) | Assinaturas de receipts, approvals, events | **Crítica** | HSM, KMS, Sigstore keyless |
-| Identidade Git / commit signing | Autoria de commits | Média | GitHub/OIDC, SPIFFE |
-| Identidade GitHub / OIDC (CI) | Subject em pipelines | Média | SSO, workload identity |
-| Definições de checks (hash) | Que check correu | Alta (se o hash for controlado pelo operador) | Registo de checks assinado |
-| Fonte observadora (Git/FS adapter) | Ações e artefactos | Alta (fonte autorizada) | Gateway mediado |
-| Relógio / timestamps | Ordem e validade temporal | Baixa (MVP: relógio local) | RFC 3161 TSA, transparency log |
+| Ed25519 signing keys | Signatures on receipts, approvals, events | **Critical** | HSM, KMS, Sigstore keyless |
+| Git identity / commit signing | Commit authorship | Medium | GitHub/OIDC, SPIFFE |
+| GitHub / OIDC identity (CI) | The subject in pipelines | Medium | SSO, workload identity |
+| Check definitions (hash) | Which check actually ran | High (if the operator controls the hash) | A signed check registry |
+| Observing source (Git/FS adapter) | Actions and artifacts | High (authorized source) | A mediated gateway |
+| Clock / timestamps | Ordering and temporal validity | Low (MVP: local clock) | RFC 3161 TSA, transparency log |
 
-## 3. Zonas de confiança
+## 3. Trust zones
 
 ```
 ┌─────────────────────────── UNTRUSTED ───────────────────────────┐
-│  Agente (Claude/Codex)  ·  workspace  ·  input do request body    │
-│  → tudo aqui é AFIRMAÇÃO, sujeita a verificação                    │
+│  Agent (Claude/Codex)  ·  workspace  ·  request body input        │
+│  → everything here is a CLAIM, subject to verification             │
 └───────────────┬───────────────────────────────────────────────────┘
-                │  trust boundary #1: observação por fonte autorizada
+                │  trust boundary #1: observation by an authorized source
 ┌───────────────▼─────────────── SEMI-TRUSTED ──────────────────────┐
 │  Git adapter · FS adapter · Verifier runner                        │
-│  → recolhem factos do sistema afetado, não da narrativa do agente  │
+│  → collect facts from the affected system, not the agent's story   │
 └───────────────┬───────────────────────────────────────────────────┘
-                │  trust boundary #2: policy determinística + assinatura
+                │  trust boundary #2: deterministic policy + signature
 ┌───────────────▼─────────────────── TRUSTED ───────────────────────┐
 │  Core domain · Policy engine · Receipt issuer · signing keys       │
-│  → determinístico, canónico, assinado                              │
+│  → deterministic, canonical, signed                                │
 └───────────────┬───────────────────────────────────────────────────┘
-                │  trust boundary #3: verificação offline com chave pública
+                │  trust boundary #3: offline verification, public key only
 ┌───────────────▼──────────────── INDEPENDENT ──────────────────────┐
-│  Independent verifier (outra máquina, sem servidor)                │
-│  → confia APENAS na chave pública + no schema, não na app emissora │
+│  Independent verifier (another machine, no server)                 │
+│  → trusts ONLY the public key and the schema, not the issuing app  │
 └────────────────────────────────────────────────────────────────────┘
 ```
 
-## 4. O que fica **dentro** da fronteira de confiança
+## 4. What sits **inside** the trust boundary
 
-- O core do domínio é determinístico e independente de infraestrutura.
-- A policy é versionada, hashable e testável.
-- O receipt é serializado canonicamente e assinado.
-- A verificação independente não requer o servidor principal.
+- The core domain is deterministic and infrastructure-independent.
+- The policy is versioned, hashable and testable.
+- The receipt is canonically serialized and signed.
+- Independent verification does not require the main server.
 
-## 5. O que fica **fora** (assunções e limites explícitos)
+## 5. What sits **outside** it (explicit assumptions and limits)
 
-- **Correção do trabalho** — fora de âmbito (ver `ACCOUNTABILITY-MODEL.md` §3).
-- **Suficiência dos checks** — a organização é responsável por definir checks adequados;
-  WorkAttest prova que correram, não que bastavam.
-- **Competência da aprovação humana** — provamos *quem* e *o quê*, não a qualidade do juízo.
-- **Segurança da chave privada** — se a signing key for comprometida, o modelo cai.
-  Mitigação: rotação, HSM/KMS, keyless (Sigstore) na evolução.
-- **Confiança no relógio (MVP)** — timestamps locais não são prova de tempo forte;
-  evolução: TSA / transparency log.
-- **Integridade da máquina que observa** — o adapter tem de correr em ambiente íntegro.
+- **Correctness of the work** — out of scope (see `ACCOUNTABILITY-MODEL.md` §3).
+- **Sufficiency of the checks** — the organization is responsible for defining adequate
+  checks; WorkAttest proves they ran, not that they were enough.
+- **Competence of the human approval** — we prove *who* and *what*, not the quality of the
+  judgement.
+- **Private key security** — if the signing key is compromised, the model collapses.
+  Mitigation: rotation, HSM/KMS, and keyless (Sigstore) as the system evolves.
+- **Trust in the clock (MVP)** — local timestamps are not strong proof of time; the path
+  forward is a TSA or a transparency log.
+- **Integrity of the observing machine** — the adapter must run in an intact environment.
 
-## 6. Modo de falha: fail-safe
+## 6. Failure mode: fail-safe
 
-Falhas de identidade, policy, assinatura ou verificação **fecham em segurança**
-(`HOLD`/`REFUSE`), nunca em `ACCEPT`. Ausência de checks obrigatórios ≠ aprovação.
+Identity, policy, signature or verification failures **close safely** (`HOLD`/`REFUSE`),
+never as `ACCEPT`. Absent mandatory checks are not an approval.
 
-## 7. Ligações
+## 7. Links
 
-- Ameaças a cada fronteira: `docs/THREAT-MODEL.md`.
-- Factos garantidos: `docs/ACCOUNTABILITY-MODEL.md`, `docs/INVARIANTS.md`.
-- Escolhas de âncoras/standards: `docs/STANDARDS-DECISIONS.md`.
+- Threats against each boundary: `docs/THREAT-MODEL.md`.
+- Guaranteed facts: `docs/ACCOUNTABILITY-MODEL.md`, `docs/INVARIANTS.md`.
+- Anchor and standards choices: `docs/STANDARDS-DECISIONS.md`.

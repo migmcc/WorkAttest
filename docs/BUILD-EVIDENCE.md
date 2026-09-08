@@ -1,4 +1,4 @@
-# BUILD EVIDENCE — MVP core (Fase 1–3)
+# BUILD EVIDENCE — MVP core (Phase 1–3)
 
 Provenance for the execution-phase build, recorded 2026-07-16.
 
@@ -23,7 +23,7 @@ cross-execution rejection, INV-10 forged-approver rejection), the **verifier run
 tests** (`tests/integration/`) against real temporary repos, plus salted field commitments,
 receipt redaction/opening, and disclosure-tamper detection (`tests/unit/test_redaction.py`).
 
-## Git adapter — Fase 3 (verified)
+## Git adapter — Phase 3 (verified)
 
 ```text
 workattest observe-git --repo <r> --before HEAD --allowed-prefix src/   -> ACCEPT; Receipt VALID
@@ -36,7 +36,7 @@ computes before/after SHA-256 per file (INV-6), and the flow enforces directory 
 a change outside the authorized prefix yields REFUSE (PRD §6 step 7) — recorded in a
 signed, offline-verifiable receipt.
 
-## Verifier runner — Fase 3 / TASK-302 (verified)
+## Verifier runner — Phase 3 / TASK-302 (verified)
 
 ```text
 workattest observe-git ... --checks pass.json   -> check[*] tests: passed (exit 0); ACCEPT; VALID
@@ -60,7 +60,7 @@ hash (INV-9), and the verifier confirms the signature AND that the signing key m
 approver subject registered in the receipt (INV-10). Adversarial test: a validly-signed but
 wrong-key approval, with the whole receipt re-signed, is still rejected by the identity check.
 
-## Receipt chains — Fase 2 (verified)
+## Receipt chains — Phase 2 (verified)
 
 ```text
 receipt verify-chain r0.json r1.json r2.json           -> Chain VALID (3 receipts); exit 0
@@ -98,7 +98,7 @@ Implemented and green: receipt schema v1, Ed25519 signatures, deterministic poli
 independent offline verifier, approval bound to execution id + result hash and signed by
 the approver, tamper detection, Git evidence capture, operator check execution, receipt
 chains, and redaction. **Not yet:** richer identity (OIDC/SSO), transparency log
-(Fase 6+ — see TASKS.md).
+(Phase 6+ — see TASKS.md).
 
 ## Scope boundary
 
