@@ -5,9 +5,8 @@ ordered; `depends_on` encodes sequencing. Status legend: `[ ]` pending · `[/]`
 partial · `[x]` done.
 
 > **Lifecycle note:** execution was approved on 2026-07-15 and the technical MVP reached
-> final validation with 85 passing tests. Items remain open when their full wording is not
-> proven, especially market interviews, property-based coverage, the complete T-1…T-12
-> suite, and cross-machine verification.
+> final validation with a passing suite (103 tests today). Items remain open when their full wording is not
+> proven, especially market interviews and property-based coverage.
 
 ---
 
@@ -34,10 +33,10 @@ partial · `[x]` done.
 
 - [x] **TASK-201** Ed25519 signing + verification + key model (INV-13/15).
 - [x] **TASK-202** Receipt issuer (canonical + signed) and offline verifier (`receipt verify`).
-- [/] **TASK-203** Adversarial tamper suite T-1…T-12 (see THREAT-MODEL §4). Implemented cases are green; the complete T-1…T-12 mapping remains open.
+- [x] **TASK-203** Adversarial tamper suite T-1…T-12 (see THREAT-MODEL §4). All twelve are covered; THREAT-MODEL §4 maps each one to its test.
 - [x] **TASK-301** Git adapter (snapshots, diffs, artifact hashes) + command observation.
 - [x] **TASK-302** Verifier runner for operator-defined checks (INV-5).
-- [/] **TASK-303** End-to-end demo: Claude/Codex → Git → signed receipt → offline verify on another machine. The local signed demo is green; verification on another machine remains open.
+- [/] **TASK-303** End-to-end demo: Claude/Codex → Git → signed receipt → offline verify on another machine. Cross-machine verification is proven: static vectors signed on the maintainer's machine are verified in CI on Linux, macOS and Windows (T-11, `tests/vectors/`). Driving the chain from a real Claude/Codex session is still done by hand.
 
 ## Additional verified increments
 

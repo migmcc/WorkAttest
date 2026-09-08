@@ -1,6 +1,10 @@
 """Adversarial tests — every mitigation must FAIL the receipt when attacked.
 
-Maps to docs/THREAT-MODEL.md §4 (T-1, T-2, T-6, T-9) and the invariants they defend.
+Maps to docs/THREAT-MODEL.md §4 (T-1, T-2, T-6, T-10, T-12) and the invariants they defend.
+
+The rest of §4 lives beside this file: T-4 and T-9 in `test_substitution.py`, T-11 in
+`test_offline_vectors.py`, and T-3, T-5, T-7, T-8 with the components that enforce them
+(`tests/unit/test_events.py`, `tests/unit/test_policy.py`).
 """
 
 import copy
@@ -82,7 +86,7 @@ def test_wrong_schema_version():
     assert verify_receipt(r).valid is False
 
 
-def test_forge_approval_by_swapping_signer_key():  # INV-10
+def test_forge_approval_by_swapping_signer_key():  # T-10 / INV-10
     # Re-sign the whole receipt (so receipt_hash + signature pass) but leave the approval
     # signed by a key that does not match the registered approver subject. The approval
     # signature / identity check must still reject it.
@@ -112,3 +116,63 @@ def test_forge_approval_by_swapping_signer_key():  # INV-10
     assert report.valid is False
     assert any("approval signatures valid" in name and not ok for name, ok, _ in report.checks)
     assert all(ok for name, ok, _ in report.checks if name in ("receipt_hash matches payload", "at least one valid signature"))
+
+
+def _resign(receipt):
+    """Re-sign a mutated receipt so its hash and signature are consistent again.
+
+    This models a capable attacker: one who controls an issuing key and can therefore
+    produce a receipt that is internally well-formed. What such an attacker must not be
+    able to do is make an unjustified decision verify.
+    """
+    from workattest.canonical import canonical_bytes
+    from workattest.crypto.keys import KeyPair
+    from workattest.crypto.signing import sign
+    from workattest.hashing import hash_bytes
+
+    payload = {
+        k: v for k, v in receipt.items()
+        if k not in ("signatures", "receipt_hash", "disclosures")
+    }
+    message = canonical_bytes(payload)
+    receipt["receipt_hash"] = hash_bytes(message).value
+    receipt["signatures"] = [sign(KeyPair.generate(), message).to_dict()]
+    return receipt
+
+
+def test_t12_a_refused_receipt_is_itself_valid():  # T-12 baseline
+    refused = _receipt()
+    refused["approvals"] = []
+    refused["decision"] = "REFUSE"
+    _resign(refused)
+    # Refusing is a legitimate, verifiable outcome — the receipt proves the refusal.
+    assert verify_receipt(refused).valid
+
+
+def test_t12_reopening_a_refuse_as_accept_is_blocked():  # T-12 / INV-16, INV-20
+    """A REFUSE cannot be relabelled ACCEPT without the approval ACCEPT demands.
+
+    The attacker re-signs, so receipt_hash and the issuer signature both pass. Only the
+    ACCEPT gate catches it: the request is high risk and the authorization requires
+    approval, and the refused receipt carries none.
+    """
+    refused = _receipt()
+    refused["approvals"] = []
+    refused["decision"] = "REFUSE"
+    _resign(refused)
+
+    reopened = copy.deepcopy(refused)
+    reopened["decision"] = "ACCEPT"
+    _resign(reopened)
+
+    report = verify_receipt(reopened)
+    assert report.valid is False
+    assert any(
+        name == "ACCEPT has required approval" and not ok
+        for name, ok, _ in report.checks
+    )
+    # Hash and signature alone cannot catch this — that is precisely why the gate exists.
+    assert all(
+        ok for name, ok, _ in report.checks
+        if name in ("receipt_hash matches payload", "at least one valid signature")
+    )

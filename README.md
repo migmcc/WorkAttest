@@ -66,6 +66,12 @@ workattest observe-git --repo /path/to/repo --before HEAD --allowed-prefix src/
 
 `receipt verify` exits `0` when the receipt is valid and `1` when tampering is detected.
 
+You can try this without issuing anything — the repository ships receipts signed elsewhere:
+
+```bash
+workattest receipt verify tests/vectors/receipt-accepted-v1.json
+```
+
 ## Run the tests
 
 ```bash
@@ -73,8 +79,15 @@ workattest observe-git --repo /path/to/repo --before HEAD --allowed-prefix src/
 ```
 
 The suite includes adversarial tests (`tests/adversarial/`) proving that flipping a
-field, swapping an artifact hash, stripping/forging a signature, or reusing an approval
-across executions all make verification fail — mapped to `docs/THREAT-MODEL.md` (T-1…T-12).
+field, swapping an artifact hash, stripping/forging a signature, reusing an approval
+across executions, substituting a weaker policy, declaring a check that never ran, or
+relabelling a REFUSE as ACCEPT all make verification fail. All twelve threats in
+`docs/THREAT-MODEL.md` §4 (T-1…T-12) are covered, and §4 maps each one to its test.
+
+`tests/vectors/` holds signed receipts that the test suite never issues — they were
+produced once, on another machine, by keys that no longer exist. CI verifies them on
+Linux, macOS and Windows, which is what makes "verifiable on any machine" a tested
+property rather than a claim. See [`tests/vectors/README.md`](tests/vectors/README.md).
 
 ## The promise (and its limits)
 

@@ -46,20 +46,27 @@ checks · registos de aprovação · a **ligação** entre todos eles.
 
 ## 4. Testes adversariais (obrigatórios no MVP)
 
-Cada mitigação tem de ter um teste que **falha o receipt** quando o ataque é tentado:
+Cada mitigação tem de ter um teste que **falha o receipt** quando o ataque é tentado.
+Todos os doze estão cobertos; a coluna indica onde:
 
-- [ ] **T-1** Alterar um byte do receipt após assinatura → verificação falha.
-- [ ] **T-2** Alterar um artefacto após `after_hash` → mismatch detetado.
-- [ ] **T-3** Remover/adulterar um `ActionEvent` no meio da chain → hash chain quebra.
-- [ ] **T-4** Agente tenta declarar um check como "passado" sem o correr → não conta.
-- [ ] **T-5** Omitir um check obrigatório → decisão HOLD, nunca ACCEPT.
-- [ ] **T-6** Aplicar a aprovação da execução A ao resultado da execução B → rejeitado (cross-execution).
-- [ ] **T-7** Autorização expirada → REFUSE.
-- [ ] **T-8** Ação fora dos diretórios autorizados → HOLD/REFUSE.
-- [ ] **T-9** Substituir a policy por outra sem atualizar o hash → detetado.
-- [ ] **T-10** Aprovar com identidade não autenticada / nome livre → rejeitado.
-- [ ] **T-11** Verificar receipt sem acesso ao servidor → sucesso (offline).
-- [ ] **T-12** Reabrir um REFUSE como ACCEPT sem reavaliar → bloqueado.
+| | Ataque | Resultado exigido | Teste |
+|---|---|---|---|
+| **T-1** | Alterar um byte do receipt após assinatura | verificação falha | `tests/adversarial/test_tamper.py` |
+| **T-2** | Alterar um artefacto após `after_hash` | mismatch detetado | `tests/adversarial/test_tamper.py` |
+| **T-3** | Remover/adulterar um `ActionEvent` no meio da chain | hash chain quebra | `tests/unit/test_events.py` |
+| **T-4** | Agente declara um check como "passado" sem o correr | não conta | `tests/adversarial/test_substitution.py` |
+| **T-5** | Omitir um check obrigatório | HOLD, nunca ACCEPT | `tests/unit/test_policy.py` |
+| **T-6** | Aplicar a aprovação da execução A ao resultado de B | rejeitado | `tests/adversarial/test_tamper.py` · `tests/unit/test_policy.py` |
+| **T-7** | Autorização expirada | REFUSE | `tests/unit/test_policy.py` |
+| **T-8** | Ação fora dos diretórios autorizados | HOLD/REFUSE | `tests/unit/test_policy.py` |
+| **T-9** | Substituir a policy por outra sem atualizar o hash | detetado | `tests/adversarial/test_substitution.py` |
+| **T-10** | Aprovar com identidade não autenticada / nome livre | rejeitado | `tests/adversarial/test_tamper.py` |
+| **T-11** | Verificar receipt sem acesso ao servidor | sucesso (offline) | `tests/adversarial/test_offline_vectors.py` |
+| **T-12** | Reabrir um REFUSE como ACCEPT sem reavaliar | bloqueado | `tests/adversarial/test_tamper.py` |
+
+**T-11** merece nota à parte. É o único que não se demonstra adulterando alguma coisa: os
+vetores em `tests/vectors/` foram assinados noutra máquina, por chaves que já não existem,
+e o CI verifica-os em Linux, macOS e Windows. Ver `tests/vectors/README.md`.
 
 ## 5. Riscos residuais aceites (MVP)
 
