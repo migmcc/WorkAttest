@@ -1,0 +1,170 @@
+{
+  "actions_root": "0487efb5937c64504efe3ec839b31998bf5284e52f3858976ea6c000ee2493a7",
+  "approvals": [
+    {
+      "approver_subject_id": "subj-human",
+      "decided_at": "2026-01-01T12:00:00Z",
+      "decision": "approve",
+      "execution_id": "exec-001",
+      "id": "apr-001",
+      "justification": "Reviewed the diff and passing checks; accepted.",
+      "policy_id": "pol-swchange",
+      "result_hash": {
+        "alg": "sha256",
+        "value": "5a83e5e1ca6af43c3d48c781320a5cc3a5839cb752b96585b7a3385637043e02"
+      },
+      "role": "engineering-manager",
+      "signature": {
+        "alg": "ed25519",
+        "created_at": "2026-01-01T12:00:00Z",
+        "key_id": "ed25519:fed60797666f8bad",
+        "public_key": "wgR4dfFYy7W8ffkZbJfozt8NlVWqNzgYrWbfeVzP9jM=",
+        "value": "EKXhUsmnEIx/Db4D77hWpXfjMFYp+Fpr21pF1dbsuNTl8HvGNkJ6Z3+oLyQswZG1r7IXMeIhbkhZQDiouc5JDA=="
+      }
+    }
+  ],
+  "artifacts": [
+    {
+      "after_hash": {
+        "alg": "sha256",
+        "value": "c7837111cde01681a0758d6a2ed06b763895c8ca641ed05044df41b7c641b52d"
+      },
+      "before_hash": {
+        "alg": "sha256",
+        "value": "6928de4ec48226ff99937959b7e5ee6a9143f3a9fb188b89db135576afb102b6"
+      },
+      "classification": "internal",
+      "id": "art-001",
+      "media_type": "text/x-python",
+      "path_or_uri": "src/auth/login.py",
+      "size": 1024,
+      "source": "git"
+    }
+  ],
+  "authorization": {
+    "allowed_actions": [
+      "edit_file",
+      "run_check"
+    ],
+    "allowed_resources": [
+      "src/auth/login.py"
+    ],
+    "conditions": [],
+    "expires_at": "2026-12-31T00:00:00Z",
+    "id": "auth-001",
+    "issued_at": "2026-01-01T12:00:00Z",
+    "policy_id": "pol-swchange",
+    "request_id": "req-001",
+    "requires_approval": true,
+    "subject_id": "subj-agent"
+  },
+  "commitments": {
+    "reviewer_note": "37f5df3831623a35f0f04597647056882776189b2cbb7d27d9f52f986675739a"
+  },
+  "decision": "ACCEPT",
+  "disclosures": {
+    "reviewer_note": {
+      "salt": "7R8gykrW24ua9GVerD2YsA==",
+      "value": "Sensitive: root cause was a hardcoded token in login.py"
+    }
+  },
+  "execution": {
+    "agent_subject_id": "subj-agent",
+    "authorization_id": "auth-001",
+    "ended_at": "2026-01-01T12:00:00Z",
+    "human_owner_id": "subj-human",
+    "id": "exec-001",
+    "model": "claude-opus-4-8",
+    "request_id": "req-001",
+    "started_at": "2026-01-01T12:00:00Z",
+    "status": "completed",
+    "workspace": "/repo"
+  },
+  "issued_at": "2026-01-01T12:00:00Z",
+  "issuer": "workattest",
+  "policy": {
+    "definition_hash": {
+      "alg": "sha256",
+      "value": "9a0f71beac6794e8f0191a99c915c0a1f94dc3e70047464cccaf181ff46e65d6"
+    },
+    "policy_id": "pol-swchange",
+    "version": "1.0.0"
+  },
+  "previous_receipt_hash": "7b490bf17f51e6187e342640d13cc4a5e20324dd20fc904cfa0bcb45b0768ef6",
+  "receipt_hash": "c62fc9107c2c9ded764057584926844282c79f0730e4f60dd4e896c77001bfee",
+  "receipt_id": "rcpt-chain-002",
+  "request": {
+    "acceptance_criteria": [
+      "tests pass",
+      "change confined to src/"
+    ],
+    "constraints": [],
+    "created_at": "2026-01-01T12:00:00Z",
+    "id": "req-001",
+    "intent": "Correct a specific bug in the login handler",
+    "owner_subject": "subj-human",
+    "risk_class": "high",
+    "scope": "src/ only",
+    "title": "Fix null-pointer in auth handler"
+  },
+  "schema_version": "1.0.0",
+  "signatures": [
+    {
+      "alg": "ed25519",
+      "created_at": "2026-01-01T12:00:00Z",
+      "key_id": "ed25519:929e9ffb416c4b2f",
+      "public_key": "Bt0Zh3no+7m8gofM6VJVagsQrx4X8R6Fwi96frc5eAw=",
+      "value": "GUA/1PCk7IFHAOU2OZRqsoj9hrQ1BHezhd+7PgImxTk3RiJUL5hI0JbZVqlVCnSR0hkCIYa902lk+THeeaPDAQ=="
+    }
+  ],
+  "subjects": [
+    {
+      "id": "subj-human",
+      "issuer": "local",
+      "public_key": "wgR4dfFYy7W8ffkZbJfozt8NlVWqNzgYrWbfeVzP9jM=",
+      "status": "active",
+      "type": "human"
+    },
+    {
+      "id": "subj-agent",
+      "issuer": "local",
+      "public_key": "T/cBpWvrpNWTtog+qkziDzs6n2J1/PY83VfC2uHzdnI=",
+      "status": "active",
+      "type": "agent"
+    }
+  ],
+  "verification": [
+    {
+      "check_id": "tests",
+      "check_version": "1.0",
+      "definition_hash": {
+        "alg": "sha256",
+        "value": "36667a3343f649763796bae8c264279a9871fb850e58e67ef2dc5c225f74f9db"
+      },
+      "ended_at": "2026-01-01T12:00:00Z",
+      "evidence_refs": [],
+      "exit_code": 0,
+      "id": "vr-001",
+      "mandatory": true,
+      "started_at": "2026-01-01T12:00:00Z",
+      "status": "passed",
+      "tool": "pytest"
+    },
+    {
+      "check_id": "lint",
+      "check_version": "1.0",
+      "definition_hash": {
+        "alg": "sha256",
+        "value": "39cc3c5eb88509e2aa2831f72184d681d19a3cbc5faba167a64e0197e8d84ad7"
+      },
+      "ended_at": "2026-01-01T12:00:00Z",
+      "evidence_refs": [],
+      "exit_code": 0,
+      "id": "vr-002",
+      "mandatory": true,
+      "started_at": "2026-01-01T12:00:00Z",
+      "status": "passed",
+      "tool": "ruff"
+    }
+  ]
+}
