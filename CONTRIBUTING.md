@@ -31,3 +31,10 @@ python -m venv .venv
 
 - `tests/unit/` — canonical, hashing, crypto, events, policy, receipts.
 - `tests/adversarial/` — tamper/cross-execution attacks that must fail verification.
+- `tests/vectors/` — signed receipts verified without the issuer; see the README there
+  before regenerating them.
+
+## Licensing of contributions
+
+By contributing, you agree that your contributions are licensed under the project's
+[MIT License](LICENSE).
