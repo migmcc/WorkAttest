@@ -7,7 +7,7 @@
 | **Project** | WorkAttest (`workattest`) |
 | **Category** | Verifiable Work Accountability |
 | **First market** | Software changes produced or assisted by AI agents |
-| **Status** | Brief — validation APPROVED (conditional) |
+| **Status** | MVP core built and tested. Market validation deliberately not pursued — see the addendum in §12 |
 
 ---
 
@@ -157,6 +157,27 @@ feasible and well bounded; an honest scope (procedural and evidential, not corre
 0 and 1, and treat willingness-to-pay as the primary stop criterion. This approval covers
 **building the MVP core and validating demand** — not building the full enterprise
 platform. Tracked as TASK-004 in `TASKS.md`.
+
+> **Addendum (2026-09-09) — the binding condition was not met, by decision.**
+>
+> The market validation interviews were never started and are not going to be. The purpose
+> of the project changed: WorkAttest is published as a technical artifact — a demonstration
+> of the accountability model and of how it is verified — rather than as a venture looking
+> for customers.
+>
+> What follows, stated plainly so no reader has to infer it:
+>
+> - The commercial thesis in this brief (§4 ICP, §10 risks) is **unvalidated**. Nobody has
+>   been asked whether they would pay for this.
+> - "The dominant risk is market risk, not build risk" remains true, and remains untested.
+> - Phases 4-7 of `docs/ROADMAP.md` are **not being executed**. They record a direction that
+>   was considered, not work in progress.
+> - The MVP core, its invariants and its adversarial coverage are complete and tested. They
+>   stand on their own terms, which is what this repository is for.
+>
+> The original decision above is kept as recorded rather than edited. It was the right call
+> on the information available in July; what changed afterwards was the goal, not the
+> reasoning.
 
 ## 13. Next sequence of work
 

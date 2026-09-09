@@ -26,7 +26,12 @@ integr.    ctrl plane  App      control plane
 ```
 
 **Mandatory parallel track (approval condition):** market interviews, running from Phase 0
-onwards. Willingness-to-pay is the primary stop criterion. See `TASKS.md` TASK-004.
+onwards. Willingness-to-pay is the primary stop criterion.
+
+> **This track was not run.** It was dropped by decision on 2026-09-09, when the goal changed
+> from taking the product to market to publishing it as a technical artifact. Everything from
+> the MVP gate rightwards in the diagram above is therefore **not in progress** — it records a
+> direction that was considered. See `PROJECT_BRIEF.md` §12 and `TASKS.md` TASK-004.
 
 ---
 
@@ -47,7 +52,8 @@ Formalize the model before writing core code.
 - [x] `schemas/work-receipt.schema.json` (receipt v1)
 
 **Gate:** trust model reviewed · receipt v1 approved · first use case closed · zero
-"absolute guarantee" claims · at least 3 market interviews started.
+"absolute guarantee" claims · at least 3 market interviews started (this last one was not
+done — see the note above).
 
 ## Phase 1 — Deterministic core  *(MVP)*
 

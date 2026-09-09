@@ -2,11 +2,12 @@
 
 Backlog for the A-team orchestrator (`/orchestrate morning` reads this). Tasks are
 ordered; `depends_on` encodes sequencing. Status legend: `[ ]` pending · `[/]`
-partial · `[x]` done.
+partial · `[x]` done · `[-]` deliberately not pursued.
 
 > **Lifecycle note:** execution was approved on 2026-07-15 and the technical MVP reached
 > final validation with a passing suite (103 tests today). Items remain open when their full wording is not
-> proven, especially market interviews and property-based coverage.
+> proven, especially property-based coverage. Market validation (TASK-004) is not open work:
+> it was deliberately dropped — see `PROJECT_BRIEF.md` §12.
 
 ---
 
@@ -15,7 +16,7 @@ partial · `[x]` done.
 - [ ] **TASK-001** Review & ratify the receipt schema v1 (`schemas/work-receipt.schema.json`) with a threat lens. `depends_on: null` — route: security-reviewer + architect.
 - [ ] **TASK-002** Cross-check INVARIANTS ↔ THREAT-MODEL ↔ receipt schema for full coverage (every INV has a test hook and a schema anchor). `depends_on: null` — route: architect.
 - [x] **TASK-003** Draft `SECURITY.md` (coordinated disclosure, threat model pointer, key-handling policy). `depends_on: null` — route: security-reviewer.
-- [ ] **TASK-004** Start market-validation interviews (idea §19) — **binding approval condition**; track willingness-to-pay. `depends_on: null` — route: human (not an agent task).
+- [-] **TASK-004** Start market-validation interviews — was a **binding approval condition**; track willingness-to-pay. **Not pursued, by decision (2026-09-09):** the project is published as a technical artifact rather than taken to market. See the addendum in `PROJECT_BRIEF.md` §12. `depends_on: null` — route: human (not an agent task).
 - [ ] **TASK-005** Phase 0 gate review: trust model reviewed, receipt v1 approved, first use case closed, zero absolute-guarantee claims. `depends_on: TASK-001, TASK-002` — route: architect + compliance-reviewer.
 
 ## Phase 1 — deterministic core

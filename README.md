@@ -17,7 +17,9 @@ responsibility** — and ties that proof to the exact artifact.
 
 ## Status
 
-Early MVP core (Phase 1 + the crypto receipt heart of Phase 2). Implemented:
+MVP core complete (Phases 1-3 of [`docs/ROADMAP.md`](docs/ROADMAP.md)); the commercial
+phases beyond it are not in progress — see [`PROJECT_BRIEF.md`](PROJECT_BRIEF.md) §12.
+Implemented:
 
 - Canonical JSON serialization (RFC 8785 subset) — deterministic hashing.
 - SHA-256 content hashing (`HashRef`).

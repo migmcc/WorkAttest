@@ -127,7 +127,8 @@ blockchain · a custom LLM · an agent framework · an enterprise control plane
 ## 10. Dependencies and risks (links)
 
 - Risks and stop criteria: `PROJECT_BRIEF.md` §10.
-- **Binding approval condition:** market interviews running in parallel;
-  willingness-to-pay is the primary stop criterion. See `TASKS.md` TASK-004.
+- **Binding approval condition (not met, by decision):** market interviews were to run in
+  parallel, with willingness-to-pay as the primary stop criterion. They were not carried out;
+  the commercial thesis is unvalidated. See `PROJECT_BRIEF.md` §12 and `TASKS.md` TASK-004.
 - Standards decisions: `docs/STANDARDS-DECISIONS.md`.
 - Trust boundaries and threats: `docs/TRUST-BOUNDARIES.md`, `docs/THREAT-MODEL.md`.
