@@ -8,7 +8,7 @@ version = "0.1.0"
 description = "Verifiable Work Accountability — cryptographically link request, authorization, execution, evidence, verification and human approval to a signed, offline-verifiable receipt for AI-assisted work."
 readme = "README.md"
 requires-python = ">=3.11"
-license = { text = "Apache-2.0" }
+license = { text = "MIT" }
 authors = [{ name = "Miguel Santos", email = "migmcc@gmail.com" }]
 keywords = ["accountability", "provenance", "attestation", "ai", "receipts", "ed25519"]
 dependencies = [
